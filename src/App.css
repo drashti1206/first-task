@@ -1,0 +1,12 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    height: 100%;
+  }
+header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}

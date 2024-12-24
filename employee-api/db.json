@@ -1,0 +1,36 @@
+{
+  "employees": [
+    {
+      "name": "Amrut Patel",
+      "position": "Employee",
+      "department": "AO Officer",
+      "email": "amratbhai44@example.com",
+      "phone": "4536971257",
+      "id": "1"
+    },
+    {
+      "id": "3",
+      "name": "Divya Patel",
+      "position": "Accounting",
+      "department": "Admin",
+      "email": "divyapatel@gmail.com",
+      "phone": "9645892136"
+    },
+    {
+      "id": "2d37",
+      "name": "Raha Patel",
+      "position": "Data management",
+      "department": "Management",
+      "email": "patelrahafeb@example.com",
+      "phone": "9763581096"
+    },
+    {
+      "id": "1a4e",
+      "name": "Krishna Maisuriya",
+      "position": "Admin assistant",
+      "department": "Production",
+      "email": "maisukrish@example.com",
+      "phone": "5698120340"
+    }
+  ]
+}
