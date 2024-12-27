@@ -28,7 +28,7 @@ const Layout = ({ children }) => {
 
         {/* Main content area */}
         <main
-          className="flex-1 p-4 overflow-y-auto"
+          className="flex-1 p-1 overflow-y-auto"
           aria-label="Main content area"
         >
           <div className="max-w-4xl mx-auto">{content}</div>

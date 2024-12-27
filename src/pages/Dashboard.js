@@ -23,8 +23,9 @@ const Dashboard = () => {
           <p className="text-2xl sm:text-3xl font-bold text-indigo-500">25</p>
           {/* Replace with working URL */}
           <img src="https://img.icons8.com/ios/452/project.png" alt="Projects" className="w-12 h-12 mt-4" />
-        </div>   
+        </div>
       </div>
+
 
       {/* Recent Activities Section */}
       <div className="recent-activities mt-8 sm:mt-12 bg-white rounded-lg shadow-md p-4 sm:p-6">
@@ -67,6 +68,7 @@ const Dashboard = () => {
           More details and charts coming soon!
         </p>
       </div>
+      
     </div>
   );
 };

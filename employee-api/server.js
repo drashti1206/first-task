@@ -8,7 +8,7 @@ app.use(express.json());
 let employees = [
     { id: 1, name: "Bharti Patel", position: "Software Engineer", department: "Engineering", email: "bhpatlkh@gmail.com", phone: "7836914852" },
     { id: 2, name: "Hetal Lad", position: "Product Manager", department: "Product", email: "ladhetal@gmail.com", phone: "9863472185" },
-    { id: 3, name: "Hardik Patel", position: "HR Recruiter", department: "HR", email: "hardikpatel@gmail.com", phone: "9645892136" }
+    { id: 3, name: "Hardik Patel", position: "HR Recruiter", department: "HR", email: "hardikpatel@gmail.com", phone: "9645892136" },
 ];
 
 // Root route for handling GET requests to "/"
@@ -29,7 +29,7 @@ app.post('/employees', (req, res) => {
     if (!name || !position || !department || !email || !phone) {
         return res.status(400).json({ message: 'All fields (name, position, department, email, phone) are required' });
     }
-
+    
     const newEmployee = {
         id: employees.length + 1,  // Simple ID generation
         name,

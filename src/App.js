@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+
 import Layout from './components/Layout'; 
 import Dashboard from './pages/Dashboard';
 import Employees from './pages/Employees';
 import Departments from './pages/Departments';
 import Settings from './pages/Settings';
+import Employeedetail from './components/Employeedetail';
 import AddEmployee from './pages/AddEmployee';
 import EditEmployee from './pages/EditEmployee';
 import EmployeeProvider from "./context/EmployeeContext";
@@ -15,9 +18,6 @@ const App = () => {
   const [employees, setEmployees] = useState(() => {
     const storedEmployees = JSON.parse(localStorage.getItem("employees"));
     return storedEmployees || [
-      { name: "Drashti Patel", position: "Software Engineer", department: "IT", email: "drashti.patel@example.com", phone: "9824129599" },
-      { name: "Divya Patel", position: "Product Manager", department: "Product", email: "divya.patel@example.com", phone: "0987654321" },
-      { name: "Keshvi Choksi", position: "Designer", department: "Creative", email: "keshvi.choksi@example.com", phone: "7285033662" },
     ];
   });
 
@@ -38,6 +38,7 @@ const App = () => {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/departments" element={<Departments />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/employees/:id" element={<Employeedetail/>}/>
             <Route path="/edit/:id" element={<EditEmployee/>}/>
             <Route
               path="/employees"

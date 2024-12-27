@@ -21,7 +21,7 @@ const Employees = () => {
       setLoading(false);
     }
   };
-
+  
   // Fetch employees data on component mount
   useEffect(() => {
     fetchEmployees();
@@ -29,14 +29,22 @@ const Employees = () => {
 
   // Handle employee deletion
   const deleteEmployee = async (id) => {
-    try {
-      await axios.delete(`http://localhost:5000/employees/${id}`);
-      fetchEmployees(); // Refetch employees after delete
-    } catch (error) {
-      setError("Failed to delete employee.");
+    // Ask for confirmation before proceeding with the deletion
+    const confirmDelete = window.confirm("Are you sure you want to delete this employee?");
+    
+    if (confirmDelete) {
+      try {
+        // Delete the employee from the server
+        await axios.delete(`http://localhost:5000/employees/${id}`);
+        
+        // Refetch employees to update the UI
+        fetchEmployees();
+      } catch (error) {
+        setError("Failed to delete employee.");
+      }
     }
   };
-
+  
   // Filter employees based on search term
   const filteredEmployees = employees.filter((employee) =>
     employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -54,7 +62,6 @@ const Employees = () => {
     }
     return 0;
   });
-
   return (
     <div className="flex flex-col items-center justify-start w-full min-h-screen p-4 sm:p-6 bg-gray-100">
       <div className="mb-6 mt-10 w-full max-w-4xl">
@@ -85,10 +92,11 @@ const Employees = () => {
       )}
 
       {!loading && !error && (
-        <div className="w-full max-w-4xl bg-white shadow-md rounded-lg overflow-hidden">
-          <div className="overflow-x-auto w-full">
-            <table className="w-full table-auto text-sm sm:text-base border-collapse">
-              <thead>
+      <div className="max-w-4xl w-full bg-white shadow-md rounded-lg">
+      {/* Add responsive scroll behavior */}
+      <div className="overflow-x-auto sm:overflow-x-visible">
+        <table className="w-full text-sm sm:text-base border-collapse">
+            <thead>
                 <tr>
                   <th className="px-4 py-2 text-left bg-gray-800 text-white font-bold uppercase border-b border-gray-300 border-r">
                     Name
@@ -116,27 +124,41 @@ const Employees = () => {
                     key={employee.id}
                     className="hover:bg-gray-200 even:bg-gray-50 odd:bg-white transition duration-300 ease-in-out"
                   >
-                    <td className="px-4 py-2 border-b border-gray-300 border-r">{employee.name}</td>
+                  
+                  <td className="px-4 py-2 border-b border-gray-300 border-r">
+                    <Link
+                      to={`/employees/${employee.id}`}
+                      className="text-blue-600 hover:text-blue-800 transition-all"
+                    >
+                      {employee.name}
+                    </Link>
+                  </td>
+
                     <td className="px-4 py-2 border-b border-gray-300 border-r">{employee.position}</td>
                     <td className="px-4 py-2 border-b border-gray-300 border-r">{employee.department}</td>
                     <td className="px-4 py-2 border-b border-gray-300 border-r">{employee.email}</td>
                     <td className="px-4 py-2 border-b border-gray-300 border-r">{employee.phone}</td>
                     <td className="px-4 py-2 border-b border-gray-300">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                        <Link
-                          to={`/edit/${employee.id}`}
-                          className="w-full sm:w-auto px-4 py-1 text-sm text-white bg-green-600 rounded-md hover:bg-green-700 transition-all text-center"
-                        >
-                          Edit
-                        </Link>
-                        <button
-                          onClick={() => deleteEmployee(employee.id)}
-                          className="w-full sm:w-auto px-4 py-1 text-sm text-white bg-red-600 rounded-md hover:bg-red-700 transition-all text-center"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {/* Edit Button with Icon */}
+                      <Link
+                        to={`/edit/${employee.id}`}
+                        className="flex items-center px-3 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 shadow-md transition-all"
+                      >
+                        <i className="fas fa-edit"></i>
+                      </Link>
+                      
+                      {/* Delete Button with Icon */}
+                      <button
+                        onClick={() => deleteEmployee(employee.id)}
+                        className="flex items-center px-3 py-2 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600 shadow-md transition-all"
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+
+
                   </tr>
                 ))}
                 {sortedEmployees.length === 0 && (

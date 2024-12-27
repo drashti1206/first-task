@@ -1,19 +1,11 @@
 {
   "employees": [
     {
-      "name": "Amrut Patel",
-      "position": "Employee",
-      "department": "AO Officer",
-      "email": "amratbhai44@example.com",
-      "phone": "4536971257",
-      "id": "1"
-    },
-    {
       "id": "3",
       "name": "Divya Patel",
       "position": "Accounting",
       "department": "Admin",
-      "email": "divyapatel@gmail.com",
+      "email": "divyapatel@gmail.cog",
       "phone": "9645892136"
     },
     {
@@ -25,12 +17,28 @@
       "phone": "9763581096"
     },
     {
-      "id": "1a4e",
-      "name": "Krishna Maisuriya",
-      "position": "Admin assistant",
-      "department": "Production",
-      "email": "maisukrish@example.com",
-      "phone": "5698120340"
+      "id": "aa60",
+      "name": "Hasti Patel",
+      "position": "Employee",
+      "department": "Graphics",
+      "email": "hastipatel@example.com",
+      "phone": "8723457890"
+    },
+    {
+      "id": "db13",
+      "name": "Nirali Patel",
+      "position": "Manager",
+      "department": "Sales",
+      "email": "niralipatel@gmail.com",
+      "phone": "7285044118"
+    },
+    {
+      "id": "f6d1",
+      "name": "Payal chauhan",
+      "position": "Scheduling",
+      "department": "Coordinator",
+      "email": "joikjsnc@fgkj.djs",
+      "phone": "6521789630"
     }
   ]
 }

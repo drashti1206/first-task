@@ -59,7 +59,6 @@ const Departments = () => {
           Add Department
         </button>
       </div>
-
       {/* Modal for Viewing Department Details */}
       {showModal && selectedDepartment && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

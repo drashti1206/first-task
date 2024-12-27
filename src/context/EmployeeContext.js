@@ -12,11 +12,10 @@ const EmployeeProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem("employees", JSON.stringify(employees));
   }, [employees]);
-
+  
   const addEmployee = (newEmployee) => setEmployees((prev) => [...prev, newEmployee]);
   const deleteEmployee = (index) => setEmployees((prev) => prev.filter((_, i) => i !== index));
   const editEmployee = (index, updatedEmployee) => setEmployees((prev) => prev.map((emp, i) => (i === index ? updatedEmployee : emp)));
-
   return (
     <EmployeeContext.Provider value={{ employees, addEmployee, deleteEmployee, editEmployee }}>
       {children}
