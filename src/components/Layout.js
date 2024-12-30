@@ -1,14 +1,9 @@
-import React from 'react';
+import React from "react";
+import { Outlet } from "react-router-dom";
 import Header from './Header';
 import Sidebar from './Sidebar';
 
-const Layout = ({ children }) => {
-  const [content, setContent] = React.useState(children);
-
-  const handleSidebarClick = (newContent) => {
-    setContent(newContent); // Update the displayed content
-  };
-
+const Layout = ({ onLogout }) => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
@@ -18,22 +13,23 @@ const Layout = ({ children }) => {
 
       {/* Main Content */}
       <div className="flex flex-1">
-        {/* Sidebar always visible on small screens with reduced width */}
-        <aside
-          className="w-32 bg-gray-100 shadow-lg sm:hidden"
-          aria-label="Sidebar for small screens"
-        >
-          <Sidebar onItemClick={(item) => handleSidebarClick(item)} />
+        {/* Sidebar */}
+        <aside className="w-32 bg-gray-100 shadow-lg sm:hidden" aria-label="Sidebar">
+          <Sidebar />
         </aside>
 
-        {/* Main content area */}
-        <main
-          className="flex-1 p-1 overflow-y-auto"
-          aria-label="Main content area"
-        >
-          <div className="max-w-4xl mx-auto">{content}</div>
+        {/* Main content */}
+        <main className="flex-1 p-4 overflow-y-auto">
+          <Outlet />
         </main>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-gray-800 text-white text-center p-4">
+        <button onClick={onLogout} className="text-red-500">
+          Logout
+        </button>
+      </footer>
     </div>
   );
 };

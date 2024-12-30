@@ -83,7 +83,7 @@ const AddEmployee = () => {
       }
     }
   };
-
+  
   return (
     <div className="flex justify-center items-center w-full min-h-screen bg-gray-100 p-4 sm:p-6">
       <div className="w-full max-w-4xl p-4 bg-white rounded-lg shadow-lg">
