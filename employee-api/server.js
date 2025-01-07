@@ -11,6 +11,15 @@ let employees = [
     { id: 3, name: "Hardik Patel", position: "HR Recruiter", department: "HR", email: "hardikpatel@gmail.com", phone: "9645892136" },
 ];
 
+// Sample departments data (Mock data)
+const departments = [
+    { id: 1, name: "Engineering" },
+    { id: 2, name: "Product" },
+    { id: 3, name: "HR" },
+    { id: 4, name: "Sales" },
+    { id: 5, name: "Customer Support" },
+];
+
 // Root route for handling GET requests to "/"
 app.get('/', (req, res) => {
     res.send('Welcome to the Employee API');
@@ -74,6 +83,11 @@ app.delete('/employees/:id', (req, res) => {
     } else {
         res.status(404).json({ message: 'Employee not found' });
     }
+});
+
+// GET /departments - Retrieve all departments
+app.get('/departments', (req, res) => {
+    res.json(departments);
 });
 
 // Start the server

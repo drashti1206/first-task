@@ -6,12 +6,14 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Employees from './pages/Employees';
 import Departments from './pages/Departments';
+import AddDepartment from "./pages/AddDepartment";
 import Settings from './pages/Settings';
 import Employeedetail from './components/Employeedetail';
 import AddEmployee from './pages/AddEmployee';
 import EditEmployee from './pages/EditEmployee';
 import EmployeeProvider from "./context/EmployeeContext";
 import Login from './components/Login';
+import ProtectedRoute from './components/ProtectedRoute'; // For role-based protection
 import './App.css';
 
 const App = () => {
@@ -24,29 +26,31 @@ const App = () => {
     return localStorage.getItem("isAuthenticated") === "true";
   });
 
-  const [user, setUser] = useState(null); // Define user state
+  const [user, setUser] = useState(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    return storedUser || null;
+  });
 
   useEffect(() => {
     localStorage.setItem("employees", JSON.stringify(employees));
   }, [employees]);
 
   const addEmployee = (newEmployee) => {
-    console.log("Adding Employee:", newEmployee);
     setEmployees((prev) => [...prev, newEmployee]);
   };
 
-  const handleLogin = () => {
-    // Set a dummy user on successful login
-    const loggedInUser = { username: "admin", role: "Admin" };
-    setUser(loggedInUser);
+  const handleLogin = (user) => {
+    setUser(user);
     setIsAuthenticated(true);
     localStorage.setItem("isAuthenticated", "true");
+    localStorage.setItem("user", JSON.stringify(user));
   };
 
   const handleLogout = () => {
-    setUser(null); // Clear the user state on logout
+    setUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("user");
   };
 
   return (
@@ -61,11 +65,27 @@ const App = () => {
             <Route path="/" element={<Layout onLogout={handleLogout} />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/departments" element={<Departments />} />
+              <Route path="/add-department" element={<AddDepartment />} />
               <Route path="/settings" element={<Settings user={user} logout={handleLogout} />} />
               <Route path="/employees" element={<Employees employees={employees} />} />
               <Route path="/employees/:id" element={<Employeedetail />} />
-              <Route path="/edit/:id" element={<EditEmployee />} />
-              <Route path="/add-employee" element={<AddEmployee addEmployee={addEmployee} />} />
+              {/* Admin-only routes */}
+              <Route
+                path="/edit/:id"
+                element={
+                  <ProtectedRoute user={user} role="Admin">
+                    <EditEmployee />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/add-employee"
+                element={
+                  <ProtectedRoute user={user} role="Admin">
+                    <AddEmployee addEmployee={addEmployee} />
+                  </ProtectedRoute>
+                }
+              />
             </Route>
           ) : (
             // Redirect to login if not authenticated

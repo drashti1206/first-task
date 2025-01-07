@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUser, FaBriefcase, FaBuilding, FaEnvelope, FaPhone } from 'react-icons/fa';
-
+import { FaUser, FaBriefcase, FaBuilding, FaEnvelope, FaPhone } from "react-icons/fa";
 
 const AddEmployee = () => {
   const [formData, setFormData] = useState({
@@ -13,7 +12,27 @@ const AddEmployee = () => {
   });
   const [errors, setErrors] = useState({});
   const [feedback, setFeedback] = useState(""); // For success or error messages
+  const [departments, setDepartments] = useState([]); // Dynamic department list
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch departments from the server
+    const fetchDepartments = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/departments");
+        if (response.ok) {
+          const data = await response.json();
+          setDepartments(data); // Update the departments state
+        } else {
+          console.error("Failed to fetch departments");
+        }
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+      }
+    };
+
+    fetchDepartments(); // Call the fetch function to get departments
+  }, []); // Empty dependency array, fetches departments only once when the component mounts
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,7 +88,6 @@ const AddEmployee = () => {
           },
           body: JSON.stringify(formData),
         });
-        //Showing success and error msg after send data to server.
         if (response.ok) {
           setFeedback("Employee added successfully!");
           setTimeout(() => {
@@ -83,7 +101,7 @@ const AddEmployee = () => {
       }
     }
   };
-  
+
   return (
     <div className="flex justify-center items-center w-full min-h-screen bg-gray-100 p-4 sm:p-6">
       <div className="w-full max-w-4xl p-4 bg-white rounded-lg shadow-lg">
@@ -129,15 +147,22 @@ const AddEmployee = () => {
             <label htmlFor="department" className="text-gray-700 font-semibold flex items-center gap-2">
               <FaBuilding /> Department
             </label>
-            <input
-              type="text"
+            <select
               id="department"
               name="department"
               value={formData.department}
               onChange={handleChange}
               className="border-b border-gray-300 py-2 px-4 w-full"
-              placeholder="Enter department"
-            />
+            >
+              <option value="" disabled>
+                Select a department
+              </option>
+              {departments.map((dept) => (
+                <option key={dept.id} value={dept.name}>
+                  {dept.name}
+                </option>
+              ))}
+            </select>
             {errors.department && <p className="text-red-500 text-sm">{errors.department}</p>}
           </div>
 

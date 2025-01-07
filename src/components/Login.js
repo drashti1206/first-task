@@ -7,8 +7,12 @@ const Login = ({ onLogin }) => {
   const navigate = useNavigate();
 
   const handleLogin = () => {
+    // Dummy credentials for role-based login
     if (username === "admin" && password === "password") {
-      onLogin();
+      onLogin({ username: "admin", role: "Admin" });
+      navigate("/dashboard");
+    } else if (username === "user" && password === "password") {
+      onLogin({ username: "user", role: "User" });
       navigate("/dashboard");
     } else {
       alert("Invalid credentials");

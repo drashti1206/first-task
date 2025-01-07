@@ -1,47 +1,63 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Header = () => {
-  const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false); // State for employee dropdown
-  const employeeDropdownRef = useRef(null); // Ref for the employee dropdown menu
+  const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
+  const employeeDropdownRef = useRef(null);
 
   const toggleEmployeeDropdown = () => {
     setIsEmployeeDropdownOpen(!isEmployeeDropdownOpen);
   };
 
-  // Close the employee dropdown if clicked outside of it
   const handleClickOutside = (e) => {
-    if (employeeDropdownRef.current && !employeeDropdownRef.current.contains(e.target)) {
-      setIsEmployeeDropdownOpen(false); // Close the dropdown if clicked outside
+    if (
+      employeeDropdownRef.current &&
+      !employeeDropdownRef.current.contains(e.target)
+    ) {
+      setIsEmployeeDropdownOpen(false);
     }
   };
 
   useEffect(() => {
-    // Add event listener for clicks outside the employee dropdown
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
-      // Cleanup event listener on component unmount
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
+  // Example toast notification
+  const handleToast = (message) => {
+    toast.success(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+  };
+
   return (
-    <header className="w-full flex items-center justify-between px-4 sm:px-8 py-3 bg-gray-800 text-white sticky top-0 z-50 shadow-md border-b border-gray-700">
-      {/* Logo Section */}
+    <header className="w-full flex items-center justify-between px-4 py-3 bg-gray-800 text-white sticky top-0 z-50 shadow-md border-b border-gray-700">
+      {/* Logo */}
       <div className="flex items-center">
         <img src="/logo.jpg" alt="Logo" className="w-10 h-auto mr-3" />
         <span className="text-xl font-bold hover:text-blue-400 cursor-pointer">
-          Employee Dashboard
+          <Link to="/">Employee Dashboard</Link>
         </span>
       </div>
 
-      {/* Navigation for large screens */}
+      {/* Navbar (visible only on large screens) */}
       <nav className="hidden sm:flex items-center space-x-6">
-        <a href="/dashboard" className="hover:bg-blue-400 transition-colors px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <Link
+          to="/dashboard"
+          onClick={() => handleToast("Navigated to Dashboard")}
+          className="hover:bg-blue-400 transition-colors px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
           Dashboard
-        </a>
-
-        {/* Employee Dropdown */}
+        </Link>
         <div className="relative">
           <button
             onClick={toggleEmployeeDropdown}
@@ -49,65 +65,57 @@ const Header = () => {
           >
             Employees
           </button>
-
-          {/* Dropdown Menu */}
           <div
             ref={employeeDropdownRef}
-            className={`absolute ${isEmployeeDropdownOpen ? "block" : "hidden"} top-full left-0 bg-gray-700 text-white shadow-lg w-48 rounded-md transition-all`}
+            className={`absolute ${
+              isEmployeeDropdownOpen ? "block" : "hidden"
+            } top-full left-0 bg-gray-700 text-white shadow-lg w-48 rounded-md transition-all`}
           >
-            <a
-              href="/employees"
-              className="block px-4 py-2 hover:bg-blue-500 transition-colors rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <Link
+              to="/employees"
+              className="block px-4 py-2 hover:bg-blue-500 transition-colors rounded-t-md"
+              onClick={() => handleToast("Viewing all employees")}
             >
               All Employees
-            </a>
-            <a
-              href="/add-employee"
-              className="block px-4 py-2 hover:bg-blue-500 transition-colors rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            </Link>
+            <Link
+              to="/add-employee"
+              className="block px-4 py-2 hover:bg-blue-500 transition-colors rounded-t-md"
+              onClick={() => handleToast("Navigating to Add Employee")}
             >
               Add New Employee
-            </a>
+            </Link>
           </div>
         </div>
-
-        <a href="/departments" className="hover:bg-blue-400 transition-colors px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <Link
+          to="/departments"
+          className="hover:bg-blue-400 transition-colors px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onClick={() => handleToast("Viewing Departments")}
+        >
           Departments
-        </a>
-        <a href="/settings" className="hover:bg-blue-400 transition-colors px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </Link>
+        <Link
+          to="/settings"
+          className="hover:bg-blue-400 transition-colors px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onClick={() => handleToast("Viewing Settings")}
+        >
           Settings
-        </a>
+        </Link>
       </nav>
 
-      {/* Responsive Navigation for Small Screens */}
-      {/* Only the logo and Employee Dashboard are visible on small screens */}
-      <nav className="sm:hidden flex flex-1 justify-between items-center">
-        <ul className="space-x-3 text-sm flex">
-          <li className="hidden">
-            <a href="/dashboard" className="hover:text-blue-400">
-              Dashboard
-            </a>
-          </li>
-          <li className="hidden">
-            <a
-              href="/employees"
-              className="hover:text-blue-400"
-              onClick={() => setIsEmployeeDropdownOpen(false)}
-            >
-              Employees
-            </a>
-          </li>
-          <li className="hidden">
-            <a href="/departments" className="hover:text-blue-400">
-              Departments
-            </a>
-          </li>
-          <li className="hidden">
-            <a href="/settings" className="hover:text-blue-400">
-              Settings
-            </a>
-          </li>
-        </ul>
-      </nav>
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        className="z-[9999]" // Ensure it appears above other elements
+      />
     </header>
   );
 };
