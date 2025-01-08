@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from 'react';
 
 const Sidebar = () => {
   const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
@@ -10,18 +10,21 @@ const Sidebar = () => {
 
   // Close the employee dropdown if clicked outside of it
   const handleClickOutside = (e) => {
-    if (employeeDropdownRef.current && !employeeDropdownRef.current.contains(e.target)) {
+    if (
+      employeeDropdownRef.current &&
+      !employeeDropdownRef.current.contains(e.target)
+    ) {
       setIsEmployeeDropdownOpen(false); // Close the dropdown if clicked outside
     }
   };
 
   useEffect(() => {
     // Add event listener for clicks outside the employee dropdown
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
       // Cleanup event listener on component unmount
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 

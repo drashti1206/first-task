@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import React, { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Header = () => {
   const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
@@ -21,16 +21,16 @@ const Header = () => {
   };
 
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
   // Example toast notification
   const handleToast = (message) => {
     toast.success(message, {
-      position: "top-right",
+      position: 'top-right',
       autoClose: 3000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -53,7 +53,7 @@ const Header = () => {
       <nav className="hidden sm:flex items-center space-x-6">
         <Link
           to="/dashboard"
-          onClick={() => handleToast("Navigated to Dashboard")}
+          onClick={() => handleToast('Navigated to Dashboard')}
           className="hover:bg-blue-400 transition-colors px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           Dashboard
@@ -68,20 +68,20 @@ const Header = () => {
           <div
             ref={employeeDropdownRef}
             className={`absolute ${
-              isEmployeeDropdownOpen ? "block" : "hidden"
+              isEmployeeDropdownOpen ? 'block' : 'hidden'
             } top-full left-0 bg-gray-700 text-white shadow-lg w-48 rounded-md transition-all`}
           >
             <Link
               to="/employees"
               className="block px-4 py-2 hover:bg-blue-500 transition-colors rounded-t-md"
-              onClick={() => handleToast("Viewing all employees")}
+              onClick={() => handleToast('Viewing all employees')}
             >
               All Employees
             </Link>
             <Link
               to="/add-employee"
               className="block px-4 py-2 hover:bg-blue-500 transition-colors rounded-t-md"
-              onClick={() => handleToast("Navigating to Add Employee")}
+              onClick={() => handleToast('Navigating to Add Employee')}
             >
               Add New Employee
             </Link>
@@ -90,14 +90,14 @@ const Header = () => {
         <Link
           to="/departments"
           className="hover:bg-blue-400 transition-colors px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onClick={() => handleToast("Viewing Departments")}
+          onClick={() => handleToast('Viewing Departments')}
         >
           Departments
         </Link>
         <Link
           to="/settings"
           className="hover:bg-blue-400 transition-colors px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onClick={() => handleToast("Viewing Settings")}
+          onClick={() => handleToast('Viewing Settings')}
         >
           Settings
         </Link>

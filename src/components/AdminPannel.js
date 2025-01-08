@@ -1,10 +1,10 @@
-import React from "react";
-import { useAuth } from "../context/UserContext";
+import React from 'react';
+import { useAuth } from '../context/UserContext';
 
 const AdminPanel = () => {
   const { role } = useAuth();
 
-  if (role !== "admin") {
+  if (role !== 'admin') {
     return <p>You do not have access to this page.</p>;
   }
 

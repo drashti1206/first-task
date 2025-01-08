@@ -1,31 +1,44 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { FiInfo } from "react-icons/fi";
-import { FaPlus } from "react-icons/fa";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FiInfo } from 'react-icons/fi';
+import { FaPlus } from 'react-icons/fa';
+import axios from 'axios'; // For fetching user role
 
 const Departments = () => {
   const [departments, setDepartments] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [userRole, setUserRole] = useState(''); // To store user role
   const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch departments from the server
     const fetchDepartments = async () => {
       try {
-        const response = await fetch("http://localhost:5000/departments");
+        const response = await fetch('http://localhost:5000/departments');
         if (response.ok) {
           const data = await response.json();
           setDepartments(data);
         } else {
-          console.error("Failed to fetch departments");
+          console.error('Failed to fetch departments');
         }
       } catch (error) {
-        console.error("Error fetching departments:", error);
+        console.error('Error fetching departments:', error);
+      }
+    };
+
+    // Fetch user role from backend
+    const fetchUserRole = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/user-role');
+        setUserRole(response.data.role); // Assuming response contains role
+      } catch (error) {
+        console.error('Error fetching user role:', error);
       }
     };
 
     fetchDepartments();
+    fetchUserRole();
   }, []);
 
   const handleViewDetails = (department) => {
@@ -47,7 +60,7 @@ const Departments = () => {
         {departments.map((department) => (
           <li
             key={department.id}
-            className="flex flex-col sm:flex-row justify-between items-center p-4 border border-gray-400 rounded-md shadow-sm  transition-transform transform hover:scale-105 hover:shadow-lg"
+            className="flex flex-col sm:flex-row justify-between items-center p-4 border border-gray-400 rounded-md shadow-sm transition-transform transform hover:scale-105 hover:shadow-lg"
           >
             <div className="flex items-center space-x-3 mb-4 sm:mb-0">
               <FiInfo className="text-indigo-500" />
@@ -63,21 +76,23 @@ const Departments = () => {
         ))}
       </ul>
 
-      {/* Add Department Button */}
-      <div className="mt-8 text-right">
-        <button
-          onClick={() => navigate("/add-department")}
-          className="px-6 py-2 text-white bg-green-500 hover:bg-green-600 rounded-md text-sm transition-colors"
-        >
-          <FaPlus className="inline mr-2" />
-          Add Department
-        </button>
-      </div>
+      {/* Add Department Button (Admin only) */}
+      {userRole === 'admin' && (
+        <div className="mt-8 text-right">
+          <button
+            onClick={() => navigate('/add-department')}
+            className="px-6 py-2 text-white bg-green-500 hover:bg-green-600 rounded-md text-sm transition-colors"
+          >
+            <FaPlus className="inline mr-2" />
+            Add Department
+          </button>
+        </div>
+      )}
 
       {/* Modal */}
       {showModal && selectedDepartment && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-8 rounded-lg shadow-lg w-11/12 sm:w-1/2 md:w-1/3 lg:w-1/4" >
+          <div className="bg-white p-8 rounded-lg shadow-lg w-11/12 sm:w-1/2 md:w-1/3 lg:w-1/4">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">
               {selectedDepartment.name}
             </h2>

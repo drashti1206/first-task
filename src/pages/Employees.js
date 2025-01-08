@@ -1,71 +1,84 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const Employees = () => {
   const [employees, setEmployees] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortOption, setSortOption] = useState("name");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOption, setSortOption] = useState('name');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userRole, setUserRole] = useState(''); // New state to store user role
 
   // Function to fetch employees data
   const fetchEmployees = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:5000/employees");
+      const response = await axios.get('http://localhost:5000/employees');
       setEmployees(response.data);
     } catch (error) {
-      setError("Failed to fetch employees.");
+      setError('Failed to fetch employees.');
     } finally {
       setLoading(false);
     }
   };
-  
-  // Fetch employees data on component mount
+
+  // Fetch user role from the backend
+  const fetchUserRole = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/user-role');
+      setUserRole(response.data.role); // Set the user role in state
+    } catch (error) {
+      setError('Failed to fetch user role.');
+    }
+  };
+
+  // Fetch employees data and user role on component mount
   useEffect(() => {
     fetchEmployees();
+    fetchUserRole();
   }, []);
 
   // Handle employee deletion
   const deleteEmployee = async (id) => {
-    // Ask for confirmation before proceeding with the deletion
-    const confirmDelete = window.confirm("Are you sure you want to delete this employee?");
-    
+    const confirmDelete = window.confirm(
+      'Are you sure you want to delete this employee?'
+    );
     if (confirmDelete) {
       try {
-        // Delete the employee from the server
         await axios.delete(`http://localhost:5000/employees/${id}`);
-        
-        // Refetch employees to update the UI
-        fetchEmployees();
+        fetchEmployees(); // Refetch employees to update the UI
       } catch (error) {
-        setError("Failed to delete employee.");
+        setError('Failed to delete employee.');
       }
     }
   };
-  
+
   // Filter employees based on search term
-  const filteredEmployees = employees.filter((employee) =>
-    employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    employee.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    employee.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    employee.phone.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredEmployees = employees.filter(
+    (employee) =>
+      employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      employee.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      employee.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      employee.phone.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Sort employees based on selected sort option
   const sortedEmployees = filteredEmployees.sort((a, b) => {
-    if (sortOption === "name") {
+    if (sortOption === 'name') {
       return a.name.localeCompare(b.name);
-    } else if (sortOption === "department") {
+    } else if (sortOption === 'department') {
       return a.department.localeCompare(b.department);
     }
     return 0;
   });
+
   return (
     <div className="flex flex-col items-center justify-start w-full min-h-screen p-4 sm:p-6 bg-gray-100">
       <div className="mb-6 mt-10 w-full max-w-4xl">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">Employee List</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">
+          Employee List
+        </h1>
       </div>
 
       {loading && <div>Loading employees...</div>}
@@ -92,11 +105,10 @@ const Employees = () => {
       )}
 
       {!loading && !error && (
-      <div className="max-w-4xl w-full bg-white shadow-md rounded-lg">
-      {/* Add responsive scroll behavior */}
-      <div className="overflow-x-auto sm:overflow-x-visible">
-        <table className="w-full text-sm sm:text-base border-collapse">
-            <thead>
+        <div className="max-w-4xl w-full bg-white shadow-md rounded-lg">
+          <div className="overflow-x-auto sm:overflow-x-visible">
+            <table className="w-full text-sm sm:text-base border-collapse">
+              <thead>
                 <tr>
                   <th className="px-4 py-2 text-left bg-gray-800 text-white font-bold uppercase border-b border-gray-300 border-r">
                     Name
@@ -124,41 +136,46 @@ const Employees = () => {
                     key={employee.id}
                     className="hover:bg-gray-200 even:bg-gray-50 odd:bg-white transition duration-300 ease-in-out"
                   >
-                  
-                  <td className="px-4 py-2 border-b border-gray-300 border-r">
-                    <Link
-                      to={`/employees/${employee.id}`}
-                      className="text-blue-600 hover:text-blue-800 transition-all"
-                    >
-                      {employee.name}
-                    </Link>
-                  </td>
-
-                    <td className="px-4 py-2 border-b border-gray-300 border-r">{employee.position}</td>
-                    <td className="px-4 py-2 border-b border-gray-300 border-r">{employee.department}</td>
-                    <td className="px-4 py-2 border-b border-gray-300 border-r">{employee.email}</td>
-                    <td className="px-4 py-2 border-b border-gray-300 border-r">{employee.phone}</td>
-                    <td className="px-4 py-2 border-b border-gray-300">
-                    <div className="flex flex-wrap gap-2 justify-center">
-                      {/* Edit Button with Icon */}
+                    <td className="px-4 py-2 border-b border-gray-300 border-r">
                       <Link
-                        to={`/edit/${employee.id}`}
-                        className="flex items-center px-3 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 shadow-md transition-all"
+                        to={`/employees/${employee.id}`}
+                        className="text-blue-600 hover:text-blue-800 transition-all"
                       >
-                        <i className="fas fa-edit"></i>
+                        {employee.name}
                       </Link>
-                      
-                      {/* Delete Button with Icon */}
-                      <button
-                        onClick={() => deleteEmployee(employee.id)}
-                        className="flex items-center px-3 py-2 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600 shadow-md transition-all"
-                      >
-                        <i className="fas fa-trash"></i>
-                      </button>
-                    </div>
-                  </td>
-
-
+                    </td>
+                    <td className="px-4 py-2 border-b border-gray-300 border-r">
+                      {employee.position}
+                    </td>
+                    <td className="px-4 py-2 border-b border-gray-300 border-r">
+                      {employee.department}
+                    </td>
+                    <td className="px-4 py-2 border-b border-gray-300 border-r">
+                      {employee.email}
+                    </td>
+                    <td className="px-4 py-2 border-b border-gray-300 border-r">
+                      {employee.phone}
+                    </td>
+                    <td className="px-4 py-2 border-b border-gray-300">
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {userRole === 'admin' && (
+                          <>
+                            <Link
+                              to={`/edit/${employee.id}`}
+                              className="flex items-center px-3 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 shadow-md transition-all"
+                            >
+                              <i className="fas fa-edit"></i>
+                            </Link>
+                            <button
+                              onClick={() => deleteEmployee(employee.id)}
+                              className="flex items-center px-3 py-2 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600 shadow-md transition-all"
+                            >
+                              <i className="fas fa-trash"></i>
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 ))}
                 {sortedEmployees.length === 0 && (
@@ -175,12 +192,14 @@ const Employees = () => {
       )}
 
       <div className="w-full max-w-4xl flex justify-start mt-6">
-        <Link
-          to="/add-employee"
-          className="mb-6 px-6 py-2 text-lg bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all"
-        >
-          Add New Employee
-        </Link>
+        {userRole === 'admin' && (
+          <Link
+            to="/add-employee"
+            className="mb-6 px-6 py-2 text-lg bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all"
+          >
+            Add New Employee
+          </Link>
+        )}
       </div>
     </div>
   );

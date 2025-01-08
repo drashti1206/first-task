@@ -1,5 +1,5 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
+import React from 'react';
+import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
 
@@ -14,7 +14,10 @@ const Layout = ({ onLogout }) => {
       {/* Main Content */}
       <div className="flex flex-1">
         {/* Sidebar */}
-        <aside className="w-32 bg-gray-100 shadow-lg sm:hidden" aria-label="Sidebar">
+        <aside
+          className="w-32 bg-gray-100 shadow-lg sm:hidden"
+          aria-label="Sidebar"
+        >
           <Sidebar />
         </aside>
 
