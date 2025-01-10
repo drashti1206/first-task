@@ -9,6 +9,7 @@ import {
 } from 'react-icons/fa';
 
 const AddEmployee = () => {
+  // State to store form data for employee details
   const [formData, setFormData] = useState({
     name: '',
     position: '',
@@ -16,19 +17,27 @@ const AddEmployee = () => {
     email: '',
     phone: '',
   });
+
+  // State to manage validation errors
   const [errors, setErrors] = useState({});
-  const [feedback, setFeedback] = useState(''); // For success or error messages
-  const [departments, setDepartments] = useState([]); // Dynamic department list
+  
+  // State to manage feedback messages for success or failure
+  const [feedback, setFeedback] = useState('');
+
+  // State to store dynamic department list fetched from the server
+  const [departments, setDepartments] = useState([]);
+
+  // Navigation hook for redirecting after successful submission
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch departments from the server
+    // Fetch departments from the backend when the component mounts
     const fetchDepartments = async () => {
       try {
         const response = await fetch('http://localhost:5000/departments');
         if (response.ok) {
           const data = await response.json();
-          setDepartments(data); // Update the departments state
+          setDepartments(data); // Store departments in state
         } else {
           console.error('Failed to fetch departments');
         }
@@ -37,21 +46,23 @@ const AddEmployee = () => {
       }
     };
 
-    fetchDepartments(); // Call the fetch function to get departments
-  }, []); // Empty dependency array, fetches departments only once when the component mounts
+    fetchDepartments(); // Fetch departments only once on component mount
+  }, []); // Empty dependency array ensures this effect runs once
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: value, // Update formData state with the changed value
     });
   };
 
+  // Validate form fields and return whether the form is valid or not
   const validateForm = () => {
     const newErrors = {};
     let isValid = true;
 
+    // Validate each field and add error messages if needed
     if (!formData.name) {
       newErrors.name = 'Name is required.';
       isValid = false;
@@ -79,26 +90,31 @@ const AddEmployee = () => {
       isValid = false;
     }
 
-    setErrors(newErrors);
-    return isValid;
+    setErrors(newErrors); // Store validation errors
+    return isValid; // Return whether the form is valid
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (validateForm()) {
+    e.preventDefault(); // Prevent default form submission behavior
+
+    if (validateForm()) { // Only proceed if form is valid
       try {
+        // Send POST request to add new employee
         const response = await fetch('http://localhost:5000/employees', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(formData), // Send form data as JSON
         });
+        
         if (response.ok) {
           setFeedback('Employee added successfully!');
+          // Redirect to employee list after 2 seconds
           setTimeout(() => {
             navigate('/employees');
-          }, 2000); // Redirect after 2 seconds
+          }, 2000);
         } else {
           setFeedback('Failed to add employee. Please try again.');
         }

@@ -8,8 +8,10 @@ const Dashboard = () => {
         Dashboard
       </h1>
 
-      {/* Stats Cards */}
+      {/* Stats Cards - Displays summary data */}
       <div className="stats-cards grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        
+        {/* Number of Employees Card */}
         <div className="card bg-white shadow-md rounded-lg p-4 sm:p-6 flex flex-col items-center hover:shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">
             Number of Employees
@@ -21,6 +23,8 @@ const Dashboard = () => {
             className="w-12 h-12 mt-4"
           />
         </div>
+
+        {/* Active Departments Card */}
         <div className="card bg-white shadow-md rounded-lg p-4 sm:p-6 flex flex-col items-center hover:shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">
             Active Departments
@@ -32,12 +36,14 @@ const Dashboard = () => {
             className="w-12 h-12 mt-4"
           />
         </div>
+
+        {/* Projects Card */}
         <div className="card bg-white shadow-md rounded-lg p-4 sm:p-6 flex flex-col items-center hover:shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">
             Projects
           </h2>
           <p className="text-2xl sm:text-3xl font-bold text-indigo-500">25</p>
-          {/* Replace with working URL */}
+          {/* Replace with actual data URL */}
           <img
             src="https://img.icons8.com/ios/452/project.png"
             alt="Projects"
@@ -46,7 +52,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Recent Activities Section */}
+      {/* Recent Activities Section - Shows latest actions */}
       <div className="recent-activities mt-8 sm:mt-12 bg-white rounded-lg shadow-md p-4 sm:p-6">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">
           Recent Activities
@@ -71,8 +77,9 @@ const Dashboard = () => {
         </ul>
       </div>
 
-      {/* Quick Actions Section */}
+      {/* Quick Actions Section - Allows navigation to various tasks */}
       <div className="quick-actions mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Add New Employee Action */}
         <div className="action-card bg-white shadow-md rounded-lg p-6 text-center hover:shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
           <h3 className="text-lg font-semibold text-gray-800 mb-2">
             Add New Employee
@@ -81,6 +88,8 @@ const Dashboard = () => {
             Add
           </button>
         </div>
+
+        {/* View Reports Action */}
         <div className="action-card bg-white shadow-md rounded-lg p-6 text-center hover:shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
           <h3 className="text-lg font-semibold text-gray-800 mb-2">
             View Reports
@@ -89,6 +98,8 @@ const Dashboard = () => {
             View
           </button>
         </div>
+
+        {/* Manage Projects Action */}
         <div className="action-card bg-white shadow-md rounded-lg p-6 text-center hover:shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
           <h3 className="text-lg font-semibold text-gray-800 mb-2">
             Manage Projects
@@ -99,7 +110,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Placeholder Section */}
+      {/* Placeholder Section - Placeholder for future updates */}
       <div className="placeholder mt-8 sm:mt-12 bg-gray-200 rounded-lg p-4 sm:p-6 text-center">
         <p className="text-sm sm:text-lg text-gray-600">
           More details and charts coming soon!

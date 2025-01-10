@@ -8,9 +8,11 @@ const Employees = () => {
   const [sortOption, setSortOption] = useState('name');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [userRole, setUserRole] = useState(''); // New state to store user role
 
-  // Function to fetch employees data
+  // Get user role from localStorage
+  const role = localStorage.getItem('user');
+  const userRole = role ? JSON.parse(role)?.role : null;
+
   const fetchEmployees = async () => {
     try {
       setLoading(true);
@@ -23,23 +25,10 @@ const Employees = () => {
     }
   };
 
-  // Fetch user role from the backend
-  const fetchUserRole = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/user-role');
-      setUserRole(response.data.role); // Set the user role in state
-    } catch (error) {
-      setError('Failed to fetch user role.');
-    }
-  };
-
-  // Fetch employees data and user role on component mount
   useEffect(() => {
     fetchEmployees();
-    fetchUserRole();
   }, []);
 
-  // Handle employee deletion
   const deleteEmployee = async (id) => {
     const confirmDelete = window.confirm(
       'Are you sure you want to delete this employee?'
@@ -47,14 +36,13 @@ const Employees = () => {
     if (confirmDelete) {
       try {
         await axios.delete(`http://localhost:5000/employees/${id}`);
-        fetchEmployees(); // Refetch employees to update the UI
+        fetchEmployees();
       } catch (error) {
         setError('Failed to delete employee.');
       }
     }
   };
 
-  // Filter employees based on search term
   const filteredEmployees = employees.filter(
     (employee) =>
       employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -63,7 +51,6 @@ const Employees = () => {
       employee.phone.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Sort employees based on selected sort option
   const sortedEmployees = filteredEmployees.sort((a, b) => {
     if (sortOption === 'name') {
       return a.name.localeCompare(b.name);
@@ -125,9 +112,11 @@ const Employees = () => {
                   <th className="px-4 py-2 text-left bg-gray-800 text-white font-bold uppercase border-b border-gray-300 border-r">
                     Phone
                   </th>
-                  <th className="px-4 py-2 text-left bg-gray-800 text-white font-bold uppercase border-b border-gray-300">
-                    Actions
-                  </th>
+                  {userRole === 'admin' && (
+                    <th className="px-4 py-2 text-left bg-gray-800 text-white font-bold uppercase border-b border-gray-300">
+                      Actions
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -156,31 +145,29 @@ const Employees = () => {
                     <td className="px-4 py-2 border-b border-gray-300 border-r">
                       {employee.phone}
                     </td>
-                    <td className="px-4 py-2 border-b border-gray-300">
-                      <div className="flex flex-wrap gap-2 justify-center">
-                        {userRole === 'admin' && (
-                          <>
-                            <Link
-                              to={`/edit/${employee.id}`}
-                              className="flex items-center px-3 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 shadow-md transition-all"
-                            >
-                              <i className="fas fa-edit"></i>
-                            </Link>
-                            <button
-                              onClick={() => deleteEmployee(employee.id)}
-                              className="flex items-center px-3 py-2 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600 shadow-md transition-all"
-                            >
-                              <i className="fas fa-trash"></i>
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
+                    {userRole === 'admin' && (
+                      <td className="px-4 py-2 border-b border-gray-300">
+                        <div className="flex flex-wrap gap-2 justify-center">
+                          <Link
+                            to={`/edit/${employee.id}`}
+                            className="flex items-center px-3 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 shadow-md transition-all"
+                          >
+                            <i className="fas fa-edit"></i>
+                          </Link>
+                          <button
+                            onClick={() => deleteEmployee(employee.id)}
+                            className="flex items-center px-3 py-2 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600 shadow-md transition-all"
+                          >
+                            <i className="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
                 {sortedEmployees.length === 0 && (
                   <tr>
-                    <td colSpan="6" className="text-center py-4 text-gray-500">
+                    <td colSpan={userRole === 'admin' ? 7 : 6} className="text-center py-4 text-gray-500">
                       No employees found.
                     </td>
                   </tr>
@@ -191,16 +178,16 @@ const Employees = () => {
         </div>
       )}
 
-      <div className="w-full max-w-4xl flex justify-start mt-6">
-        {userRole === 'admin' && (
+      {userRole === 'admin' && (
+        <div className="w-full max-w-4xl flex justify-start mt-6">
           <Link
             to="/add-employee"
             className="mb-6 px-6 py-2 text-lg bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all"
           >
             Add New Employee
           </Link>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

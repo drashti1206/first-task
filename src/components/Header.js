@@ -1,11 +1,16 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Header = () => {
   const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
+  const [shownToasts, setShownToasts] = useState({}); // State to track displayed toasts
   const employeeDropdownRef = useRef(null);
+
+  // Get user role from localStorage
+  const role = localStorage.getItem("user");
+  const userRole = role ? JSON.parse(role)?.role : null;
 
   const toggleEmployeeDropdown = () => {
     setIsEmployeeDropdownOpen(!isEmployeeDropdownOpen);
@@ -21,22 +26,26 @@ const Header = () => {
   };
 
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  // Example toast notification
-  const handleToast = (message) => {
-    toast.success(message, {
-      position: 'top-right',
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-    });
+  // Function to handle toast notifications
+  const handleToast = (message, key) => {
+    // Only show the toast if it hasn't been displayed before
+    if (!shownToasts[key]) {
+      toast.success(message, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      setShownToasts((prev) => ({ ...prev, [key]: true })); // Mark the toast as shown
+    }
   };
 
   return (
@@ -53,51 +62,71 @@ const Header = () => {
       <nav className="hidden sm:flex items-center space-x-6">
         <Link
           to="/dashboard"
-          onClick={() => handleToast('Navigated to Dashboard')}
+          onClick={() => handleToast("Navigated to Dashboard", "dashboard")}
           className="hover:bg-blue-400 transition-colors px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           Dashboard
         </Link>
-        <div className="relative">
-          <button
-            onClick={toggleEmployeeDropdown}
-            className="hover:bg-blue-400 transition-colors px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Employees
-          </button>
-          <div
-            ref={employeeDropdownRef}
-            className={`absolute ${
-              isEmployeeDropdownOpen ? 'block' : 'hidden'
-            } top-full left-0 bg-gray-700 text-white shadow-lg w-48 rounded-md transition-all`}
-          >
-            <Link
-              to="/employees"
-              className="block px-4 py-2 hover:bg-blue-500 transition-colors rounded-t-md"
-              onClick={() => handleToast('Viewing all employees')}
+
+        {/* Employee Dropdown or Button based on user role */}
+        {userRole === "admin" ? (
+          <div className="relative">
+            <button
+              onClick={toggleEmployeeDropdown}
+              className="hover:bg-blue-400 transition-colors px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              All Employees
-            </Link>
-            <Link
-              to="/add-employee"
-              className="block px-4 py-2 hover:bg-blue-500 transition-colors rounded-t-md"
-              onClick={() => handleToast('Navigating to Add Employee')}
+              Employees
+            </button>
+            <div
+              ref={employeeDropdownRef}
+              className={`absolute ${
+                isEmployeeDropdownOpen ? "block" : "hidden"
+              } top-full left-0 bg-gray-700 text-white shadow-lg w-48 rounded-md transition-all`}
             >
-              Add New Employee
-            </Link>
+              <Link
+                to="/employees"
+                className="block px-4 py-2 hover:bg-blue-500 transition-colors rounded-t-md"
+                onClick={() =>
+                  handleToast("Viewing all employees", "view-employees")
+                }
+              >
+                All Employees
+              </Link>
+              <Link
+                to="/add-employee"
+                className="block px-4 py-2 hover:bg-blue-500 transition-colors rounded-t-md"
+                onClick={() =>
+                  handleToast("Navigating to Add Employee", "add-employee")
+                }
+              >
+                Add New Employee
+              </Link>
+            </div>
           </div>
-        </div>
+        ) : (
+          // Employee Button for users
+          <Link
+            to="/employees"
+            className="hover:bg-blue-400 transition-colors px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onClick={() => handleToast("Viewing all employees", "view-employees")}
+          >
+            Employee
+          </Link>
+        )}
+
         <Link
           to="/departments"
           className="hover:bg-blue-400 transition-colors px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onClick={() => handleToast('Viewing Departments')}
+          onClick={() =>
+            handleToast("Viewing Departments", "view-departments")
+          }
         >
           Departments
         </Link>
         <Link
           to="/settings"
           className="hover:bg-blue-400 transition-colors px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onClick={() => handleToast('Viewing Settings')}
+          onClick={() => handleToast("Viewing Settings", "view-settings")}
         >
           Settings
         </Link>

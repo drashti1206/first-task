@@ -9,102 +9,110 @@ import {
 } from 'react-icons/fa';
 
 const EditEmployee = () => {
-  const { id } = useParams(); // Get employee ID from route params
+  const { id } = useParams(); // Get employee ID from route params (used for fetching the employee data)
   const [formData, setFormData] = useState({
     name: '',
     position: '',
     department: '',
     email: '',
     phone: '',
-  });
-  const [errors, setErrors] = useState({});
-  const [feedback, setFeedback] = useState(''); // For success or error messages
-  const navigate = useNavigate();
+  }); // State to store form data for employee
+  const [errors, setErrors] = useState({}); // State to store form validation errors
+  const [feedback, setFeedback] = useState(''); // State to store success or error feedback messages
+  const navigate = useNavigate(); // Hook to navigate between pages
 
   useEffect(() => {
-    // Fetch existing employee data
+    // Fetch existing employee data based on the employee ID
     const fetchEmployeeData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/employees/${id}`);
+        const response = await fetch(`http://localhost:5000/employees/${id}`); // API call to fetch employee details
         if (response.ok) {
-          const data = await response.json();
+          const data = await response.json(); // Parse the response and set the form data
           setFormData(data);
         } else {
-          setFeedback('Failed to fetch employee data.');
+          setFeedback('Failed to fetch employee data.'); // Error feedback
         }
       } catch (error) {
-        setFeedback('Error connecting to the server.');
+        setFeedback('Error connecting to the server.'); // Error feedback
       }
     };
 
-    fetchEmployeeData();
-  }, [id]);
+    fetchEmployeeData(); // Trigger the employee data fetching on component mount
+  }, [id]); // Effect depends on the employee ID in the URL
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: value, // Update the specific field in the formData state
     });
   };
 
+  // Form validation function
   const validateForm = () => {
-    const newErrors = {};
-    let isValid = true;
+    const newErrors = {}; // Object to store validation errors
+    let isValid = true; // Flag to track overall validity of the form
 
+    // Validate name field
     if (!formData.name) {
-      newErrors.name = 'Name is required.';
+      newErrors.name = 'Name is required.'; // Show error message if the name is empty
       isValid = false;
     }
+    // Validate position field
     if (!formData.position) {
       newErrors.position = 'Position is required.';
       isValid = false;
     }
+    // Validate department field
     if (!formData.department) {
       newErrors.department = 'Department is required.';
       isValid = false;
     }
+    // Validate email field
     if (!formData.email) {
       newErrors.email = 'Email is required.';
       isValid = false;
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid.';
+      newErrors.email = 'Email is invalid.'; // Regular expression to check for valid email format
       isValid = false;
     }
+    // Validate phone number field
     if (!formData.phone) {
       newErrors.phone = 'Phone number is required.';
       isValid = false;
     } else if (!/^\d{10}$/.test(formData.phone)) {
-      newErrors.phone = 'Phone number must be 10 digits.';
+      newErrors.phone = 'Phone number must be 10 digits.'; // Ensure phone number has exactly 10 digits
       isValid = false;
     }
 
-    setErrors(newErrors);
-    return isValid;
+    setErrors(newErrors); // Update error state with validation results
+    return isValid; // Return true if the form is valid, otherwise false
   };
 
+  // Handle form submission (update employee data)
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (validateForm()) {
+    e.preventDefault(); // Prevent default form submission behavior
+    if (validateForm()) { // Only submit if the form is valid
       try {
+        // Make PUT request to update employee data on the server
         const response = await fetch(`http://localhost:5000/employees/${id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(formData), // Send form data as JSON
         });
 
         if (response.ok) {
-          setFeedback('Employee details updated successfully!');
+          setFeedback('Employee details updated successfully!'); // Success feedback
           setTimeout(() => {
-            navigate('/employees');
-          }, 2000); // Redirect after 2 seconds
+            navigate('/employees'); // Redirect to employees list after 2 seconds
+          }, 2000);
         } else {
-          setFeedback('Failed to update employee. Please try again.');
+          setFeedback('Failed to update employee. Please try again.'); // Error feedback
         }
       } catch (error) {
-        setFeedback('Error connecting to the server.');
+        setFeedback('Error connecting to the server.'); // Error feedback if the request fails
       }
     }
   };
@@ -114,6 +122,7 @@ const EditEmployee = () => {
       <div className="w-full max-w-4xl p-4 bg-white rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold mb-4 text-gray-800">Edit Employee</h1>
 
+        {/* Form for editing employee details */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full">
           {/* Name */}
           <div className="flex flex-col">
@@ -133,7 +142,7 @@ const EditEmployee = () => {
               placeholder="Enter name"
             />
             {errors.name && (
-              <p className="text-red-500 text-sm">{errors.name}</p>
+              <p className="text-red-500 text-sm">{errors.name}</p> // Show error message if any
             )}
           </div>
 

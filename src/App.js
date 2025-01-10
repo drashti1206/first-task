@@ -64,7 +64,10 @@ const App = () => {
         <Routes>
           {/* Login Route */}
           {!isAuthenticated && (
-            <Route path="/login" element={<Login onLogin={handleLogin} />} />
+            <>
+              <Route path="/" element={<Navigate to="/login" />} />
+              <Route path="/login" element={<Login onLogin={handleLogin} />} />
+            </>
           )}
 
           {/* Protected Routes */}
@@ -86,7 +89,7 @@ const App = () => {
               <Route
                 path="/edit/:id"
                 element={
-                  <ProtectedRoute user={user} role="Admin">
+                  <ProtectedRoute user={user} role="admin">
                     <EditEmployee />
                   </ProtectedRoute>
                 }
@@ -94,7 +97,7 @@ const App = () => {
               <Route
                 path="/add-employee"
                 element={
-                  <ProtectedRoute user={user} role="Admin">
+                  <ProtectedRoute user={user} role="admin">
                     <AddEmployee addEmployee={addEmployee} />
                   </ProtectedRoute>
                 }

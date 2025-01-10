@@ -2,53 +2,47 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiInfo } from 'react-icons/fi';
 import { FaPlus } from 'react-icons/fa';
-import axios from 'axios'; // For fetching user role
+
 
 const Departments = () => {
-  const [departments, setDepartments] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedDepartment, setSelectedDepartment] = useState(null);
-  const [userRole, setUserRole] = useState(''); // To store user role
-  const navigate = useNavigate();
+  const [departments, setDepartments] = useState([]); // State to store department data
+  const [showModal, setShowModal] = useState(false); // State to control modal visibility
+  const [selectedDepartment, setSelectedDepartment] = useState(null); // State to store selected department data
+  const [userRole, setUserRole] = useState(''); // State to store user role (used for admin access)
+  const navigate = useNavigate(); // Hook to navigate between routes
 
   useEffect(() => {
-    // Fetch departments from the server
+    // Fetch departments from the server on component mount
     const fetchDepartments = async () => {
       try {
-        const response = await fetch('http://localhost:5000/departments');
+        const response = await fetch('http://localhost:5000/departments'); // API call to fetch departments
         if (response.ok) {
-          const data = await response.json();
-          setDepartments(data);
+          const data = await response.json(); // Parse response data
+          setDepartments(data); // Set departments to state
         } else {
-          console.error('Failed to fetch departments');
+          console.error('Failed to fetch departments'); // Error handling
         }
       } catch (error) {
-        console.error('Error fetching departments:', error);
+        console.error('Error fetching departments:', error); // Error handling
       }
     };
 
-    // Fetch user role from backend
-    const fetchUserRole = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/user-role');
-        setUserRole(response.data.role); // Assuming response contains role
-      } catch (error) {
-        console.error('Error fetching user role:', error);
-      }
-    };
+    // Get the user role from localStorage (instead of making an API call)
+    const role = localStorage.getItem('user');
+    const storedUserRole = role ? JSON.parse(role)?.role : null; // Parse user role from localStorage
+    setUserRole(storedUserRole); // Set the user role from localStorage
 
-    fetchDepartments();
-    fetchUserRole();
-  }, []);
+    fetchDepartments(); // Fetch departments
+  }, []); // Empty dependency array ensures this effect runs only once when the component mounts
 
   const handleViewDetails = (department) => {
-    setSelectedDepartment(department);
-    setShowModal(true);
+    setSelectedDepartment(department); // Set the selected department for viewing details
+    setShowModal(true); // Show the modal
   };
 
   const closeModal = () => {
-    setShowModal(false);
-    setSelectedDepartment(null);
+    setShowModal(false); // Close the modal
+    setSelectedDepartment(null); // Clear selected department
   };
 
   return (
@@ -59,15 +53,15 @@ const Departments = () => {
       <ul className="space-y-4">
         {departments.map((department) => (
           <li
-            key={department.id}
+            key={department.id} // Unique key for each list item
             className="flex flex-col sm:flex-row justify-between items-center p-4 border border-gray-400 rounded-md shadow-sm transition-transform transform hover:scale-105 hover:shadow-lg"
           >
             <div className="flex items-center space-x-3 mb-4 sm:mb-0">
-              <FiInfo className="text-indigo-500" />
-              <span className="text-lg font-medium">{department.name}</span>
+              <FiInfo className="text-indigo-500" /> {/* Department info icon */}
+              <span className="text-lg font-medium">{department.name}</span> {/* Department name */}
             </div>
             <button
-              onClick={() => handleViewDetails(department)}
+              onClick={() => handleViewDetails(department)} // Show department details when clicked
               className="mt-4 sm:mt-0 sm:ml-4 px-4 py-2 text-sm text-white bg-blue-500 hover:bg-blue-600 rounded-md transition-colors"
             >
               View Details
@@ -76,32 +70,32 @@ const Departments = () => {
         ))}
       </ul>
 
-      {/* Add Department Button (Admin only) */}
+      {/* Add Department Button - Only visible to admins */}
       {userRole === 'admin' && (
         <div className="mt-8 text-right">
           <button
-            onClick={() => navigate('/add-department')}
+            onClick={() => navigate('/add-department')} // Navigate to the "add department" page
             className="px-6 py-2 text-white bg-green-500 hover:bg-green-600 rounded-md text-sm transition-colors"
           >
-            <FaPlus className="inline mr-2" />
+            <FaPlus className="inline mr-2" /> {/* Add icon */}
             Add Department
           </button>
         </div>
       )}
 
-      {/* Modal */}
+      {/* Modal for showing department details */}
       {showModal && selectedDepartment && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg w-11/12 sm:w-1/2 md:w-1/3 lg:w-1/4">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-              {selectedDepartment.name}
+              {selectedDepartment.name} {/* Display selected department's name */}
             </h2>
             <p className="text-gray-700 mb-4">
-              Details about the {selectedDepartment.name} department.
+              Details about the {selectedDepartment.name} department. {/* Placeholder for more details */}
             </p>
             <div className="flex justify-end">
               <button
-                onClick={closeModal}
+                onClick={closeModal} // Close the modal when clicked
                 className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
               >
                 Close
