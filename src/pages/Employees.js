@@ -147,7 +147,7 @@ const Employees = () => {
                     </td>
                     {userRole === 'admin' && (
                       <td className="px-4 py-2 border-b border-gray-300">
-                        <div className="flex flex-wrap gap-2 justify-center">
+                        <div className="flex gap-2 justify-center">
                           <Link
                             to={`/edit/${employee.id}`}
                             className="flex items-center px-3 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 shadow-md transition-all"
@@ -167,7 +167,10 @@ const Employees = () => {
                 ))}
                 {sortedEmployees.length === 0 && (
                   <tr>
-                    <td colSpan={userRole === 'admin' ? 7 : 6} className="text-center py-4 text-gray-500">
+                    <td
+                      colSpan={userRole === 'admin' ? 7 : 6}
+                      className="text-center py-4 text-gray-500"
+                    >
                       No employees found.
                     </td>
                   </tr>

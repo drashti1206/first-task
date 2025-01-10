@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AddDepartment = () => {
   // State to manage the department name input field
-  const [departmentName, setDepartmentName] = useState("");
+  const [departmentName, setDepartmentName] = useState('');
   // State to manage feedback messages for the user
-  const [feedback, setFeedback] = useState("");
+  const [feedback, setFeedback] = useState('');
   // `useNavigate` hook for navigation after the department is successfully added
   const navigate = useNavigate();
 
@@ -15,39 +15,41 @@ const AddDepartment = () => {
 
     // Check if department name is provided, and display feedback if not
     if (!departmentName) {
-      setFeedback("Department name is required.");
+      setFeedback('Department name is required.');
       return;
     }
 
     try {
       // Send a POST request to the backend to add the new department
-      const response = await fetch("http://localhost:5000/departments", {
-        method: "POST",
+      const response = await fetch('http://localhost:5000/departments', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ name: departmentName }), // Pass the department name as the request body
       });
 
       // If the response is successful, show a success message
       if (response.ok) {
-        setFeedback("Department added successfully!");
+        setFeedback('Department added successfully!');
         // Redirect to the departments list page after a brief delay
-        setTimeout(() => navigate("/departments"), 2000);
+        setTimeout(() => navigate('/departments'), 2000);
       } else {
         // If the request fails, show a failure message
-        setFeedback("Failed to add department.");
+        setFeedback('Failed to add department.');
       }
     } catch (error) {
       // Catch any network or server errors and display an error message
-      setFeedback("Error connecting to the server.");
+      setFeedback('Error connecting to the server.');
     }
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="w-full max-w-lg bg-white p-6 rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold mb-4 text-gray-800">Add Department</h1>
+        <h1 className="text-2xl font-bold mb-4 text-gray-800">
+          Add Department
+        </h1>
 
         {/* Form to add a new department */}
         <form onSubmit={handleSubmit}>

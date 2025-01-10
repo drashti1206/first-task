@@ -20,7 +20,7 @@ const AddEmployee = () => {
 
   // State to manage validation errors
   const [errors, setErrors] = useState({});
-  
+
   // State to manage feedback messages for success or failure
   const [feedback, setFeedback] = useState('');
 
@@ -98,7 +98,8 @@ const AddEmployee = () => {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission behavior
 
-    if (validateForm()) { // Only proceed if form is valid
+    if (validateForm()) {
+      // Only proceed if form is valid
       try {
         // Send POST request to add new employee
         const response = await fetch('http://localhost:5000/employees', {
@@ -108,7 +109,7 @@ const AddEmployee = () => {
           },
           body: JSON.stringify(formData), // Send form data as JSON
         });
-        
+
         if (response.ok) {
           setFeedback('Employee added successfully!');
           // Redirect to employee list after 2 seconds

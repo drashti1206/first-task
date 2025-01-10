@@ -25,8 +25,8 @@ const EmployeeProvider = ({ children }) => {
 
   // Function to edit an employee's details in the state by index
   const editEmployee = (index, updatedEmployee) =>
-    setEmployees((prev) =>
-      prev.map((emp, i) => (i === index ? updatedEmployee : emp)) // Updates the employee if the index matches
+    setEmployees(
+      (prev) => prev.map((emp, i) => (i === index ? updatedEmployee : emp)) // Updates the employee if the index matches
     );
 
   return (

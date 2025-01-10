@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { FiInfo } from 'react-icons/fi';
 import { FaPlus } from 'react-icons/fa';
 
-
 const Departments = () => {
   const [departments, setDepartments] = useState([]); // State to store department data
   const [showModal, setShowModal] = useState(false); // State to control modal visibility
@@ -45,6 +44,29 @@ const Departments = () => {
     setSelectedDepartment(null); // Clear selected department
   };
 
+  const getDepartmentDetails = (department) => {
+    if (department.name === 'HR') {
+      return (
+        <div>
+          <h3 className="font-medium text-lg text-gray-900">
+            HR Department Details
+          </h3>
+          <ul className="list-disc pl-6">
+            <li>Recruitment and onboarding</li>
+            <li>Finding and hiring candidates</li>
+            <li>Designing job descriptions</li>
+            <li>Advertising job openings</li>
+          </ul>
+        </div>
+      );
+    }
+    return (
+      <p>
+        Details for the {department.name} department will be displayed here.
+      </p>
+    );
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-3xl font-semibold text-gray-900 mb-6">Departments</h1>
@@ -57,8 +79,12 @@ const Departments = () => {
             className="flex flex-col sm:flex-row justify-between items-center p-4 border border-gray-400 rounded-md shadow-sm transition-transform transform hover:scale-105 hover:shadow-lg"
           >
             <div className="flex items-center space-x-3 mb-4 sm:mb-0">
-              <FiInfo className="text-indigo-500" /> {/* Department info icon */}
-              <span className="text-lg font-medium">{department.name}</span> {/* Department name */}
+              <FiInfo className="text-indigo-500" />{' '}
+              {/* Department info icon */}
+              <span className="text-lg font-medium">
+                {department.name}
+              </span>{' '}
+              {/* Department name */}
             </div>
             <button
               onClick={() => handleViewDetails(department)} // Show department details when clicked
@@ -88,11 +114,10 @@ const Departments = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg w-11/12 sm:w-1/2 md:w-1/3 lg:w-1/4">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-              {selectedDepartment.name} {/* Display selected department's name */}
+              {selectedDepartment.name}{' '}
+              {/* Display selected department's name */}
             </h2>
-            <p className="text-gray-700 mb-4">
-              Details about the {selectedDepartment.name} department. {/* Placeholder for more details */}
-            </p>
+            {getDepartmentDetails(selectedDepartment)}
             <div className="flex justify-end">
               <button
                 onClick={closeModal} // Close the modal when clicked

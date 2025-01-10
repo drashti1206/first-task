@@ -92,7 +92,8 @@ const EditEmployee = () => {
   // Handle form submission (update employee data)
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission behavior
-    if (validateForm()) { // Only submit if the form is valid
+    if (validateForm()) {
+      // Only submit if the form is valid
       try {
         // Make PUT request to update employee data on the server
         const response = await fetch(`http://localhost:5000/employees/${id}`, {

@@ -8,7 +8,7 @@ const Settings = ({ user, logout }) => {
   // Handle logout by calling the logout function and redirecting to the login page
   const handleLogout = () => {
     logout(); // Clears user authentication (this function should be passed down as a prop)
-    navigate('/login'); // Redirects the user to the login page after logout
+    navigate('/rolesection'); // Redirects the user to the login page after logout
   };
 
   return (

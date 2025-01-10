@@ -10,7 +10,6 @@ const Dashboard = () => {
 
       {/* Stats Cards - Displays summary data */}
       <div className="stats-cards grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        
         {/* Number of Employees Card */}
         <div className="card bg-white shadow-md rounded-lg p-4 sm:p-6 flex flex-col items-center hover:shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">

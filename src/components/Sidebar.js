@@ -42,7 +42,7 @@ const Sidebar = () => {
               Dashboard
             </a>
           </li>
-          
+
           <li className="relative">
             {/* Button to toggle the employee dropdown */}
             <button
@@ -51,7 +51,7 @@ const Sidebar = () => {
             >
               Employees
             </button>
-            
+
             {/* Employee dropdown - only visible when `isEmployeeDropdownOpen` is true */}
             {isEmployeeDropdownOpen && (
               <div

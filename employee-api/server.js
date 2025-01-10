@@ -65,12 +65,10 @@ app.post('/employees', (req, res) => {
 
   // Validation to ensure all required fields are provided
   if (!name || !position || !department || !email || !phone) {
-    return res
-      .status(400)
-      .json({
-        message:
-          'All fields (name, position, department, email, phone) are required',
-      });
+    return res.status(400).json({
+      message:
+        'All fields (name, position, department, email, phone) are required',
+    });
   }
 
   const newEmployee = {
@@ -93,12 +91,10 @@ app.put('/employees/:id', (req, res) => {
 
   // Validation to ensure required fields are provided
   if (!name || !position || !department || !email || !phone) {
-    return res
-      .status(400)
-      .json({
-        message:
-          'All fields (name, position, department, email, phone) are required',
-      });
+    return res.status(400).json({
+      message:
+        'All fields (name, position, department, email, phone) are required',
+    });
   }
 
   const employeeIndex = employees.findIndex((emp) => emp.id === parseInt(id));

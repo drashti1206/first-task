@@ -87,7 +87,7 @@ const EmployeeDetail = () => {
             {/* Link to navigate back to the employees list */}
             <Link
               to="/employees"
-              className="px-6 py-2 text-lg bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-all"
+              className="px-6 py-2 text-lg bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all"
             >
               Back to List
             </Link>
