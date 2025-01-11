@@ -54,7 +54,7 @@ const Header = () => {
       <div className="flex items-center">
         <img src="logo.jpg" alt="Logo" className="w-10 h-auto mr-3" />
         <span className="text-xl font-bold hover:text-blue-400 cursor-pointer">
-          <Link to="/">Employee Dashboard</Link>
+          <Link to="/">Employee Management</Link>
         </span>
       </div>
 

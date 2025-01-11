@@ -7,113 +7,100 @@ import {
   FaEnvelope,
   FaPhone,
 } from 'react-icons/fa';
+import axios from 'axios';
 
 const EditEmployee = () => {
-  const { id } = useParams(); // Get employee ID from route params (used for fetching the employee data)
+  const { id } = useParams(); // Get employee ID from route params
   const [formData, setFormData] = useState({
     name: '',
     position: '',
     department: '',
     email: '',
     phone: '',
-  }); // State to store form data for employee
-  const [errors, setErrors] = useState({}); // State to store form validation errors
-  const [feedback, setFeedback] = useState(''); // State to store success or error feedback messages
-  const navigate = useNavigate(); // Hook to navigate between pages
+  }); // State to store form data
+  const [errors, setErrors] = useState({});
+  const [feedback, setFeedback] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch existing employee data based on the employee ID
     const fetchEmployeeData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/employees/${id}`); // API call to fetch employee details
-        if (response.ok) {
-          const data = await response.json(); // Parse the response and set the form data
-          setFormData(data);
-        } else {
-          setFeedback('Failed to fetch employee data.'); // Error feedback
-        }
+        const response = await axios.get(
+          `http://localhost:5000/employees/${id}`
+        );
+        setFormData(response.data); // Directly set data to formData
       } catch (error) {
-        setFeedback('Error connecting to the server.'); // Error feedback
+        setFeedback('Failed to fetch employee data.');
       }
     };
-
-    fetchEmployeeData(); // Trigger the employee data fetching on component mount
-  }, [id]); // Effect depends on the employee ID in the URL
+    fetchEmployeeData(); // Fetch employee data based on the `id` parameter
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value, // Update the specific field in the formData state
+      [name]: value, // Update state with form field value
     });
   };
 
-  // Form validation function
   const validateForm = () => {
-    const newErrors = {}; // Object to store validation errors
-    let isValid = true; // Flag to track overall validity of the form
+    const newErrors = {};
+    let isValid = true;
 
-    // Validate name field
     if (!formData.name) {
-      newErrors.name = 'Name is required.'; // Show error message if the name is empty
+      newErrors.name = 'Name is required.';
       isValid = false;
     }
-    // Validate position field
     if (!formData.position) {
       newErrors.position = 'Position is required.';
       isValid = false;
     }
-    // Validate department field
     if (!formData.department) {
       newErrors.department = 'Department is required.';
       isValid = false;
     }
-    // Validate email field
     if (!formData.email) {
       newErrors.email = 'Email is required.';
       isValid = false;
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid.'; // Regular expression to check for valid email format
+      newErrors.email = 'Email is invalid.';
       isValid = false;
     }
-    // Validate phone number field
     if (!formData.phone) {
       newErrors.phone = 'Phone number is required.';
       isValid = false;
     } else if (!/^\d{10}$/.test(formData.phone)) {
-      newErrors.phone = 'Phone number must be 10 digits.'; // Ensure phone number has exactly 10 digits
+      newErrors.phone = 'Phone number must be 10 digits.';
       isValid = false;
     }
 
-    setErrors(newErrors); // Update error state with validation results
-    return isValid; // Return true if the form is valid, otherwise false
+    setErrors(newErrors);
+    return isValid;
   };
 
-  // Handle form submission (update employee data)
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
+    e.preventDefault();
     if (validateForm()) {
-      // Only submit if the form is valid
       try {
-        // Make PUT request to update employee data on the server
         const response = await fetch(`http://localhost:5000/employees/${id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(formData), // Send form data as JSON
+          body: JSON.stringify(formData),
         });
 
         if (response.ok) {
-          setFeedback('Employee details updated successfully!'); // Success feedback
+          setFeedback('Employee details updated successfully!');
           setTimeout(() => {
-            navigate('/employees'); // Redirect to employees list after 2 seconds
+            navigate('/employees'); // Redirect to employee list after success
           }, 2000);
         } else {
-          setFeedback('Failed to update employee. Please try again.'); // Error feedback
+          setFeedback('Failed to update employee.');
         }
       } catch (error) {
-        setFeedback('Error connecting to the server.'); // Error feedback if the request fails
+        setFeedback('Error connecting to the server.');
       }
     }
   };
@@ -122,8 +109,6 @@ const EditEmployee = () => {
     <div className="flex justify-center items-center w-full min-h-screen bg-gray-100 p-4 sm:p-6">
       <div className="w-full max-w-4xl p-4 bg-white rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold mb-4 text-gray-800">Edit Employee</h1>
-
-        {/* Form for editing employee details */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full">
           {/* Name */}
           <div className="flex flex-col">
@@ -143,7 +128,7 @@ const EditEmployee = () => {
               placeholder="Enter name"
             />
             {errors.name && (
-              <p className="text-red-500 text-sm">{errors.name}</p> // Show error message if any
+              <p className="text-red-500 text-sm">{errors.name}</p>
             )}
           </div>
 
@@ -235,16 +220,18 @@ const EditEmployee = () => {
             )}
           </div>
 
-          {/* Feedback Message */}
           {feedback && (
             <p
-              className={`text-lg font-semibold ${feedback.includes('successfully') ? 'text-green-500' : 'text-red-500'}`}
+              className={`text-lg font-semibold ${
+                feedback.includes('successfully')
+                  ? 'text-green-500'
+                  : 'text-red-500'
+              }`}
             >
               {feedback}
             </p>
           )}
 
-          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row sm:justify-between gap-6 mt-8">
             <button
               type="submit"

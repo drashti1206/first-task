@@ -13,11 +13,17 @@ const Employees = () => {
   const role = localStorage.getItem('user');
   const userRole = role ? JSON.parse(role)?.role : null;
 
+  // Fetch employees with unique keys
   const fetchEmployees = async () => {
     try {
       setLoading(true);
       const response = await axios.get('http://localhost:5000/employees');
-      setEmployees(response.data);
+      const sanitizedEmployees = response.data.map((employee, index) => {
+        // Combine employee ID with index to guarantee uniqueness
+        const uniqueKey = `${employee.id || index}-${index}`;
+        return { ...employee, uniqueKey };
+      });
+      setEmployees(sanitizedEmployees);
     } catch (error) {
       setError('Failed to fetch employees.');
     } finally {
@@ -29,6 +35,7 @@ const Employees = () => {
     fetchEmployees();
   }, []);
 
+  // Delete employee function
   const deleteEmployee = async (id) => {
     const confirmDelete = window.confirm(
       'Are you sure you want to delete this employee?'
@@ -43,6 +50,7 @@ const Employees = () => {
     }
   };
 
+  // Filter and sort employees
   const filteredEmployees = employees.filter(
     (employee) =>
       employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -122,7 +130,7 @@ const Employees = () => {
               <tbody>
                 {sortedEmployees.map((employee) => (
                   <tr
-                    key={employee.id}
+                    key={employee.uniqueKey}
                     className="hover:bg-gray-200 even:bg-gray-50 odd:bg-white transition duration-300 ease-in-out"
                   >
                     <td className="px-4 py-2 border-b border-gray-300 border-r">
