@@ -1,156 +1,106 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faLock } from '@fortawesome/free-solid-svg-icons'; // Import FontAwesome icons
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 
 const Login = ({ onLogin }) => {
-  const [username, setUsername] = useState(''); // State to store username input
-  const [password, setPassword] = useState(''); // State to store password input
-  const [error, setError] = useState(''); // State for error messages
-  const [loginType, setLoginType] = useState(''); // State for toggling between admin and user login
-  const navigate = useNavigate(); // Hook for programmatic navigation
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [loginType, setLoginType] = useState('');
+  const navigate = useNavigate();
 
-  // Function to validate password
-  const isPasswordValid = (password) => {
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    return passwordRegex.test(password);
+  const predefinedPassword = 'Employee@123';
+  
+  const handleEmployeeLogin = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/employees');
+      const employee = response.data.find(emp => emp.email.toLowerCase() === email.toLowerCase());
+  
+      if (employee) {
+        if (password === predefinedPassword) {
+          onLogin({ email: employee.email, role: 'employee' });
+          navigate('/dashboard');
+        } else {
+          setError('Incorrect password for the employee.');
+        }
+      } else {
+        setError(`Employee not found for email: ${email}`);
+      }
+    } catch (error) {
+      setError('Error logging in. Please try again.');
+    }
   };
 
-  // Function to validate user credentials and navigate based on the role
   const handleLogin = () => {
-    // Reset error state
     setError('');
 
-    // Validate password
-    if (!isPasswordValid(password)) {
-      setError(
-        'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.'
-      );
+    if (!email || !password || !loginType) {
+      setError('All fields are required.');
       return;
     }
 
-    // Dummy credentials for demonstration purposes
-    if (
-      username === 'admin' &&
-      password === 'Admin@123' &&
-      loginType === 'admin'
-    ) {
-      // Simulate Admin login
-      onLogin({ username: 'admin', role: 'admin' });
-      navigate('/dashboard'); // Redirect to dashboard
-    } else if (
-      username === 'user' &&
-      password === 'User@123' &&
-      loginType === 'user'
-    ) {
-      // Simulate User login
-      onLogin({ username: 'user', role: 'user' });
-      navigate('/dashboard'); // Redirect to dashboard
+    if (loginType === 'admin') {
+      if (email !== 'drashti@gmail.com') {
+        setError('Only drashti@gmail.com can log in as admin.');
+        return;
+      }
+      if (password === 'Admin@123') {
+        onLogin({ email: 'drashti@gmail.com', role: 'admin' });
+        navigate('/dashboard');
+      } else {
+        setError('Incorrect password for admin.');
+      }
+    } else if (loginType === 'user') {
+      handleEmployeeLogin();
     } else {
-      // Show alert for invalid credentials
-      setError('Invalid username or password');
+      setError('Invalid role selected.');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm transition-all">
-        {/* Logo Section */}
-        <div className="flex justify-around mb-6 transition-all">
-          {/* Admin Logo */}
-          {loginType !== 'user' && (
-            <div
-              onClick={() => setLoginType('admin')}
-              className={`cursor-pointer ${loginType === 'admin' ? 'border-teal-600 transform scale-110' : ''} transition-all duration-300`}
-            >
-              <img
-                src="user.jpg" // Replace with Admin logo path
-                alt="Admin Logo"
-                className="w-16 h-16 rounded-full border-2 border-transparent hover:border-teal-500"
-              />
-              <p className="text-center text-sm mt-2">Admin</p>
-            </div>
-          )}
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 relative">
+      <div className="absolute top-0 left-4 p-4 flex items-center">
+        <img src="logo.jpg" alt="Employee Management Logo" className="w-12 h-12 mr-3" />
+        <h1 className="text-gray-800 font-bold text-xl">Employee Management</h1>
+      </div>
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
+        <h2 className="text-4xl font-semibold text-gray-800 mb-2 text-center">Welcome!</h2>
+        <h2 className="text-lg font-medium text-gray-600 mb-4 text-center">Please enter your details.</h2>
 
-          {/* User Logo */}
-          {loginType !== 'admin' && (
-            <div
-              onClick={() => setLoginType('user')}
-              className={`cursor-pointer ${loginType === 'user' ? 'border-teal-600 transform scale-110' : ''} transition-all duration-300`}
-            >
-              <img
-                src="user.jpg" // Replace with User logo path
-                alt="User Logo"
-                className="w-16 h-16 rounded-full border-2 border-transparent hover:border-teal-500"
-              />
-              <p className="text-center text-sm mt-2">User</p>
-            </div>
-          )}
+        <div className="mb-6">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Role</label>
+          <select value={loginType} onChange={(e) => setLoginType(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <option value="" disabled>Select Role</option>
+            <option value="admin">Admin</option>
+            <option value="user">User</option>
+          </select>
         </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="mb-4 text-red-600 text-sm font-medium text-center">
-            {error}
-          </div>
-        )}
+        {error && <div className="mb-4 text-red-600 text-sm font-medium text-center">{error}</div>}
 
-        {/* Username Field */}
         <div className="mb-4">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Username
-          </label>
-          <div className="flex items-center border border-gray-300 rounded-md">
-            <FontAwesomeIcon
-              icon={faUser}
-              className="w-5 h-5 ml-2 text-gray-500"
-            />
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)} // Updates username state
-              className="w-full px-4 py-2 pl-2 border-none focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Enter your username"
-            />
-          </div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Enter your email" required />
         </div>
 
-        {/* Password Field */}
         <div className="mb-4">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Password
-          </label>
-          <div className="flex items-center border border-gray-300 rounded-md">
-            <FontAwesomeIcon
-              icon={faLock}
-              className="w-5 h-5 ml-2 text-gray-500"
-            />
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)} // Updates password state
-              className="w-full px-4 py-2 pl-2 border-none focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Enter your password"
-            />
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+          <div className="flex items-center border border-gray-300 rounded-md relative">
+            <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 border-none focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Enter your password" required />
+            <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} className="absolute right-3 text-gray-500 cursor-pointer"
+              onClick={() => setShowPassword(!showPassword)} />
           </div>
         </div>
 
-        {/* Forgot Password */}
-        <div className="mb-6 text-left">
-          <a
-            href="/forgot-password"
-            className="text-sm text-blue-600 hover:underline"
-          >
-            Forgot Password?
-          </a>
-        </div>
-
-        {/* Login Button */}
-        <button
-          onClick={handleLogin} // Calls the handleLogin function on click
-          className="w-full py-2 bg-gray-800 text-white font-semibold rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
-        >
+        <button onClick={handleLogin} className="w-full py-2 bg-gray-800 text-white font-semibold rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500">
           LOGIN
         </button>
       </div>

@@ -1,28 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { format } from 'date-fns';
 
 const Employees = () => {
   const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterDepartment, setFilterDepartment] = useState('');
+  const [filterPosition, setFilterPosition] = useState('');
+  const [filterHireDate, setFilterHireDate] = useState('');
   const [sortOption, setSortOption] = useState('name');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Get user role from localStorage
   const role = localStorage.getItem('user');
   const userRole = role ? JSON.parse(role)?.role : null;
 
-  // Fetch employees with unique keys
   const fetchEmployees = async () => {
     try {
       setLoading(true);
       const response = await axios.get('http://localhost:5000/employees');
-      const sanitizedEmployees = response.data.map((employee, index) => {
-        // Combine employee ID with index to guarantee uniqueness
-        const uniqueKey = `${employee.id || index}-${index}`;
-        return { ...employee, uniqueKey };
-      });
+      const sanitizedEmployees = response.data.map((employee, index) => ({
+        ...employee,
+        uniqueKey: `${employee.id || index}-${index}`,
+      }));
       setEmployees(sanitizedEmployees);
     } catch (error) {
       setError('Failed to fetch employees.');
@@ -35,11 +36,8 @@ const Employees = () => {
     fetchEmployees();
   }, []);
 
-  // Delete employee function
   const deleteEmployee = async (id) => {
-    const confirmDelete = window.confirm(
-      'Are you sure you want to delete this employee?'
-    );
+    const confirmDelete = window.confirm('Are you sure you want to delete this employee?');
     if (confirmDelete) {
       try {
         await axios.delete(`http://localhost:5000/employees/${id}`);
@@ -50,155 +48,172 @@ const Employees = () => {
     }
   };
 
-  // Filter and sort employees
-  const filteredEmployees = employees.filter(
-    (employee) =>
-      employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      employee.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      employee.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      employee.phone.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const fuzzyMatch = (input, target) => {
+    const inputLower = input.toLowerCase();
+    const targetLower = target.toLowerCase();
 
-  const sortedEmployees = filteredEmployees.sort((a, b) => {
-    if (sortOption === 'name') {
-      return a.name.localeCompare(b.name);
-    } else if (sortOption === 'department') {
-      return a.department.localeCompare(b.department);
+    let i = 0,
+      j = 0;
+    while (i < inputLower.length && j < targetLower.length) {
+      if (inputLower[i] === targetLower[j]) {
+        i++;
+      }
+      j++;
     }
-    return 0;
-  });
+    return i === inputLower.length; // Return true if all characters in input match in order.
+  };
+
+  const filteredEmployees = useMemo(() => {
+    return employees
+      .filter((employee) => {
+        const searchLower = searchTerm.toLowerCase();
+        return (
+          (!filterDepartment || employee.department === filterDepartment) &&
+          (!filterPosition || employee.position === filterPosition) &&
+          (!filterHireDate || employee.hireDate === filterHireDate) &&
+          (fuzzyMatch(searchLower, employee.name) || fuzzyMatch(searchLower, employee.email))
+        );
+      })
+      .sort((a, b) => {
+        if (sortOption === 'name') {
+          return a.name.localeCompare(b.name);
+        } else if (sortOption === 'department') {
+          return a.department.localeCompare(b.department);
+        }
+        return 0;
+      });
+  }, [employees, searchTerm, filterDepartment, filterPosition, filterHireDate, sortOption]);
 
   return (
-    <div className="flex flex-col items-center justify-start w-full min-h-screen p-4 sm:p-6 bg-gray-100">
-      <div className="mb-6 mt-10 w-full max-w-4xl">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">
-          Employee List
-        </h1>
-      </div>
+    <div className="flex h-screen">
+      <main className="flex-1 flex-col items-center justify-start w-full min-h-screen sm:p-6 bg-gray-100 p-6 rounded-lg shadow-md m-4">
+        <header className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold text-blue-800">Employees</h1>
+          {userRole === 'admin' && (
+            <Link
+              to="/add-employee"
+              className="mb-6 px-4 py-2 text-lg bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all"
+            >
+              + Add Employee
+            </Link>
+          )}
+        </header>
 
-      {loading && <div>Loading employees...</div>}
-      {error && <div>Error: {error}</div>}
-
-      {!loading && !error && (
-        <div className="mb-6 w-full max-w-4xl flex items-center gap-4 flex-col sm:flex-row sm:gap-4">
+        <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
           <input
             type="text"
-            placeholder="Search employees..."
-            className="w-full sm:w-auto p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="Search employees by name or email..."
+            className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             onChange={(e) => setSearchTerm(e.target.value)}
             value={searchTerm}
           />
           <select
+            value={filterDepartment}
+            onChange={(e) => setFilterDepartment(e.target.value)}
+            className="mt-1 sm:mt-0 sm:w-auto px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="">All Departments</option>
+            <option value="HR">HR</option>
+            <option value="Engineering">Engineering</option>
+            <option value="Sales">Sales</option>
+            <option value="Customer Care">Customer Care</option>
+            <option value="Executive">Executive</option>
+
+
+          </select>
+          <select
+            value={filterPosition}
+            onChange={(e) => setFilterPosition(e.target.value)}
+            className="mt-1 sm:mt-0 sm:w-auto px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="">All Positions</option>
+            <option value="Manager">Manager</option>
+            <option value="Developer">Developer</option>
+            <option value="Analyst">Analyst</option>
+            <option value="Software Engineer">Software Engineer</option>
+            <option value="Product Manager">Product Manager</option>
+          </select>
+          <input
+            type="date"
+            className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            onChange={(e) => setFilterHireDate(e.target.value)}
+            value={filterHireDate}
+          />
+          <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
-            className="mt-1 sm:mt-0 sm:p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="mt-1 sm:mt-0 sm:w-auto px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option value="name">Sort by Name</option>
             <option value="department">Sort by Department</option>
           </select>
         </div>
-      )}
 
-      {!loading && !error && (
-        <div className="max-w-4xl w-full bg-white shadow-md rounded-lg">
-          <div className="overflow-x-auto sm:overflow-x-visible">
-            <table className="w-full text-sm sm:text-base border-collapse">
-              <thead>
-                <tr>
-                  <th className="px-4 py-2 text-left bg-gray-800 text-white font-bold uppercase border-b border-gray-300 border-r">
-                    Name
-                  </th>
-                  <th className="px-4 py-2 text-left bg-gray-800 text-white font-bold uppercase border-b border-gray-300 border-r">
-                    Position
-                  </th>
-                  <th className="px-4 py-2 text-left bg-gray-800 text-white font-bold uppercase border-b border-gray-300 border-r">
-                    Department
-                  </th>
-                  <th className="px-4 py-2 text-left bg-gray-800 text-white font-bold uppercase border-b border-gray-300 border-r">
-                    Email
-                  </th>
-                  <th className="px-4 py-2 text-left bg-gray-800 text-white font-bold uppercase border-b border-gray-300 border-r">
-                    Phone
-                  </th>
-                  {userRole === 'admin' && (
-                    <th className="px-4 py-2 text-left bg-gray-800 text-white font-bold uppercase border-b border-gray-300">
-                      Actions
-                    </th>
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {sortedEmployees.map((employee) => (
-                  <tr
-                    key={employee.uniqueKey}
-                    className="hover:bg-gray-200 even:bg-gray-50 odd:bg-white transition duration-300 ease-in-out"
-                  >
-                    <td className="px-4 py-2 border-b border-gray-300 border-r">
-                      <Link
-                        to={`/employees/${employee.id}`}
-                        className="text-blue-600 hover:text-blue-800 transition-all"
-                      >
-                        {employee.name}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-2 border-b border-gray-300 border-r">
-                      {employee.position}
-                    </td>
-                    <td className="px-4 py-2 border-b border-gray-300 border-r">
-                      {employee.department}
-                    </td>
-                    <td className="px-4 py-2 border-b border-gray-300 border-r">
-                      {employee.email}
-                    </td>
-                    <td className="px-4 py-2 border-b border-gray-300 border-r">
-                      {employee.phone}
-                    </td>
-                    {userRole === 'admin' && (
-                      <td className="px-4 py-2 border-b border-gray-300">
-                        <div className="flex gap-2 justify-center">
-                          <Link
-                            to={`/edit/${employee.id}`}
-                            className="flex items-center px-3 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 shadow-md transition-all"
-                          >
-                            <i className="fas fa-edit"></i>
-                          </Link>
-                          <button
-                            onClick={() => deleteEmployee(employee.id)}
-                            className="flex items-center px-3 py-2 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600 shadow-md transition-all"
-                          >
-                            <i className="fas fa-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                    )}
-                  </tr>
-                ))}
-                {sortedEmployees.length === 0 && (
+        {loading && <div>Loading Employees...</div>}
+        {error && <div className="text-red-500">{error}</div>}
+        {!loading && !error && (
+          <>
+            <div className="overflow-x-auto max-h-96 overflow-y-auto"> 
+              <table className="w-full table-auto border border-gray-300 rounded-lg shadow-sm sm:bg-gray-100">
+                <thead className="bg-blue-100 border-b border-gray-300 sticky top-0">
                   <tr>
-                    <td
-                      colSpan={userRole === 'admin' ? 7 : 6}
-                      className="text-center py-4 text-gray-500"
-                    >
-                      No employees found.
-                    </td>
+                    <th className="px-4 py-2 text-left text-gray-800">Name</th>
+                    <th className="px-4 py-2 text-left text-gray-800">Position</th>
+                    <th className="px-4 py-2 text-left text-gray-800">Department</th>
+                    <th className="px-4 py-2 text-left text-gray-800">Email</th>
+                    <th className="px-4 py-2 text-left text-gray-800">Phone</th>
+                    <th className="px-4 py-2 text-left text-gray-800">Hire Date</th>
+                    {userRole === 'admin' && <th className="p-4 text-left text-blue-800">Actions</th>}
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {userRole === 'admin' && (
-        <div className="w-full max-w-4xl flex justify-start mt-6">
-          <Link
-            to="/add-employee"
-            className="mb-6 px-6 py-2 text-lg bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all"
-          >
-            Add New Employee
-          </Link>
-        </div>
-      )}
+                </thead>
+                <tbody>
+                  {filteredEmployees.length > 0 ? (
+                    filteredEmployees.map((employee) => (
+                      <tr
+                        key={employee.uniqueKey}
+                        className="hover:bg-gray-200 even:bg-gray-50 odd:bg-white transition duration-300 ease-in-out"
+                      >
+                        <td className="px-4 py-2 border-b border-gray-300">{employee.name}</td>
+                        <td className="px-4 py-2 border-b border-gray-300">{employee.position}</td>
+                        <td className="px-4 py-2 border-b border-gray-300">{employee.department}</td>
+                        <td className="px-4 py-2 border-b border-gray-300">{employee.email}</td>
+                        <td className="px-4 py-2 border-b border-gray-300">{employee.phone}</td>
+                        <td className="px-4 py-2 border-b border-gray-300">
+                          {employee.hireDate ? format(new Date(employee.hireDate), 'MMM dd, yyyy') : 'n/a'}
+                        </td>
+                        {userRole === 'admin' && (
+                          <td className="px-4 py-2 border-b border-gray-300">
+                            <div className="flex gap-2 justify-center">
+                              <Link
+                                to={`/edit/${employee.id}`}
+                                className="flex items-center px-3 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 shadow-md transition-all"
+                              >
+                                <i className="fas fa-edit"></i>
+                              </Link>
+                              <button
+                                onClick={() => deleteEmployee(employee.id)}
+                                className="flex items-center px-3 py-2 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600 shadow-md transition-all"
+                              >
+                                <i className="fas fa-trash"></i>
+                              </button>
+                            </div>
+                          </td>
+                        )}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={userRole === 'admin' ? 7 : 6} className="text-center py-4 text-gray-500">
+                        No employees found. {userRole === 'admin' && <Link to="/add-employee" className="text-blue-600">Add First Employee</Link>}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+      </main>
     </div>
   );
 };

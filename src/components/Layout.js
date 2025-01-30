@@ -1,47 +1,50 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Header from './Header';
+import React, { useState } from 'react';
 import Sidebar from './Sidebar';
+import { Outlet } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-// Layout Component
-// Provides the overall structure of the application, including the header, sidebar, main content area, and footer.
-const Layout = ({ onLogout }) => {
+const Layout = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Header Section */}
-      {/* Stays fixed at the top with a shadow for better visibility */}
-      <header className="sticky top-0 z-30 bg-gray-800 shadow-md">
-        <Header /> {/* Includes navigation and branding */}
-      </header>
+    <div className="relative flex h-screen overflow-hidden">
+      {/* Hamburger Menu Button */}
+      <button
+        className="md:hidden p-2 text-white bg-gray-800 fixed top-0 left-0 z-50"
+        onClick={toggleSidebar}
+      >
+        <i className="fas fa-bars"></i>
+      </button>
 
-      {/* Main Content Section */}
-      <div className="flex flex-1">
-        {/* Sidebar Section */}
-        {/* Contains additional navigation options, hidden on small screens */}
-        <aside
-          className="w-32 bg-gray-100 shadow-lg sm:hidden"
-          aria-label="Sidebar"
-        >
-          <Sidebar />
-        </aside>
-
-        {/* Dynamic Main Content */}
-        {/* Content rendered here is determined by the current route via the <Outlet /> component */}
-        <main className="flex-1 p-4 overflow-y-auto">
-          <Outlet />
-        </main>
+      {/* Sidebar Section */}
+      <div
+        className={`fixed top-0 left-0 z-40 h-full w-3/4 bg-gray-800 text-white shadow-lg transform transition-transform duration-300 ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } md:relative md:translate-x-0 md:w-48`}
+      >
+        <Sidebar
+          isSidebarOpen={isSidebarOpen}
+          toggleSidebar={() => setIsSidebarOpen(false)} // Close sidebar when a link is clicked
+        />
       </div>
-
-      {/* Footer Section */}
-      {/* Includes the logout button for user authentication control */}
-      <footer className="bg-gray-800 text-white text-center p-4">
-        <button
-          onClick={onLogout} // Triggered to log the user out of the application
-          className="text-red-500"
-        >
-          Logout
-        </button>
-      </footer>
+      {/* Main Content Area */}
+      <div
+        className={`flex-1 bg-gray-50 overflow-y-auto p-4 md:p-6 transition-opacity duration-300 ${
+          isSidebarOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
+      >
+        <div className="text-center text-lg font-semibold md:hidden">
+          Employee Management
+        </div>
+        {/* ToastContainer placed inside main content area */}
+        <ToastContainer />
+        <Outlet />
+      </div>
     </div>
   );
 };

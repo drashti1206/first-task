@@ -6,6 +6,7 @@ import {
   FaBuilding,
   FaEnvelope,
   FaPhone,
+  FaCalendarAlt,
 } from 'react-icons/fa';
 import axios from 'axios';
 
@@ -17,6 +18,7 @@ const EditEmployee = () => {
     department: '',
     email: '',
     phone: '',
+    hireDate:'',
   }); // State to store form data
   const [errors, setErrors] = useState({});
   const [feedback, setFeedback] = useState('');
@@ -28,13 +30,26 @@ const EditEmployee = () => {
         const response = await axios.get(
           `http://localhost:5000/employees/${id}`
         );
-        setFormData(response.data); // Directly set data to formData
+        const data = response.data;
+  
+        // Ensure hireDate is formatted as YYYY-MM-DD
+        if (data.hireDate) {
+          const localDate = new Date(data.hireDate);
+          const year = localDate.getFullYear();
+          const month = String(localDate.getMonth() + 1).padStart(2, '0'); // Month is 0-based
+          const day = String(localDate.getDate()).padStart(2, '0');
+          data.hireDate = `${year}-${month}-${day}`; // Format date as YYYY-MM-DD
+        }
+  
+        setFormData(data); // Set data to formData
       } catch (error) {
         setFeedback('Failed to fetch employee data.');
       }
     };
-    fetchEmployeeData(); // Fetch employee data based on the `id` parameter
+  
+    fetchEmployeeData(); // Call the function
   }, [id]);
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -74,6 +89,10 @@ const EditEmployee = () => {
       newErrors.phone = 'Phone number must be 10 digits.';
       isValid = false;
     }
+    if (!formData.hireDate) {
+      newErrors.hireDate = 'Hire date is required.';
+      isValid = false;
+    }
 
     setErrors(newErrors);
     return isValid;
@@ -109,7 +128,7 @@ const EditEmployee = () => {
     <div className="flex justify-center items-center w-full min-h-screen bg-gray-100 p-4 sm:p-6">
       <div className="w-full max-w-4xl p-4 bg-white rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold mb-4 text-gray-800">Edit Employee</h1>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full flex-grow">
           {/* Name */}
           <div className="flex flex-col">
             <label
@@ -220,6 +239,27 @@ const EditEmployee = () => {
             )}
           </div>
 
+          {/* Hire Date */}
+          <div className="flex flex-col">
+            <label
+              htmlFor="hireDate"
+              className="text-gray-700 font-semibold flex items-center gap-2"
+            >
+              <FaCalendarAlt /> Hire Date
+            </label>
+            <input
+              type="date"
+              id="hireDate"
+              name="hireDate"
+              value={formData.hireDate}
+              onChange={handleChange}
+              className="border-b border-gray-300 py-2 px-4 w-full"
+            />
+            {errors.hireDate && (
+              <p className="text-red-500 text-sm">{errors.hireDate}</p>
+            )}
+          </div>
+        
           {feedback && (
             <p
               className={`text-lg font-semibold ${
@@ -232,7 +272,7 @@ const EditEmployee = () => {
             </p>
           )}
 
-          <div className="flex flex-col sm:flex-row sm:justify-between gap-6 mt-8">
+          <div className="flex flex-col sm:flex-row sm:justify-between gap-6 mt-auto">
             <button
               type="submit"
               className="px-6 py-3 text-lg text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-all"

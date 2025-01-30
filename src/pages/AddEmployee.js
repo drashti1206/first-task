@@ -6,6 +6,7 @@ import {
   FaBuilding,
   FaEnvelope,
   FaPhone,
+  FaCalendarAlt,
 } from 'react-icons/fa';
 
 const AddEmployee = () => {
@@ -16,6 +17,7 @@ const AddEmployee = () => {
     department: '',
     email: '',
     phone: '',
+    hireDate:'',
   });
 
   // State to manage validation errors
@@ -89,6 +91,10 @@ const AddEmployee = () => {
       newErrors.phone = 'Phone number must be 10 digits.';
       isValid = false;
     }
+    if (!formData.hireDate) {
+      newErrors.hireDate = 'Hire date is required.';
+      isValid = false;
+    }
 
     setErrors(newErrors); // Store validation errors
     return isValid; // Return whether the form is valid
@@ -126,8 +132,8 @@ const AddEmployee = () => {
   };
 
   return (
-    <div className="flex justify-center items-center w-full min-h-screen bg-gray-100 p-4 sm:p-6">
-      <div className="w-full max-w-4xl p-4 bg-white rounded-lg shadow-lg">
+    <div className="flex h-screen ">
+      <div className="lex-1 flex-col item-center justify-start w-full min-h-screen sm:p-6 bg-gray-100 p-6 rounded-lg shadow-md m-4">
         <h1 className="text-3xl font-bold mb-4 text-gray-800">Add Employee</h1>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full">
@@ -145,7 +151,7 @@ const AddEmployee = () => {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="border-b border-gray-300 py-2 px-4 w-full"
+              className="border-b border-gray-300 py-2 px-4 w-1/2"
               placeholder="Enter name"
             />
             {errors.name && (
@@ -167,7 +173,7 @@ const AddEmployee = () => {
               name="position"
               value={formData.position}
               onChange={handleChange}
-              className="border-b border-gray-300 py-2 px-4 w-full"
+              className="border-b border-gray-300 py-2 px-4 w-1/2"
               placeholder="Enter position"
             />
             {errors.position && (
@@ -188,7 +194,7 @@ const AddEmployee = () => {
               name="department"
               value={formData.department}
               onChange={handleChange}
-              className="border-b border-gray-300 py-2 px-4 w-full"
+              className="border-b border-gray-300 py-2 px-4 w-1/2"
             >
               <option value="" disabled>
                 Select a department
@@ -218,7 +224,7 @@ const AddEmployee = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="border-b border-gray-300 py-2 px-4 w-full"
+              className="border-b border-gray-300 py-2 px-4 w-1/2"
               placeholder="Enter email"
             />
             {errors.email && (
@@ -240,12 +246,28 @@ const AddEmployee = () => {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              className="border-b border-gray-300 py-2 px-4 w-full"
+              className="border-b border-gray-300 py-2 px-4 w-1/2"
               placeholder="Enter phone number"
             />
             {errors.phone && (
               <p className="text-red-500 text-sm">{errors.phone}</p>
             )}
+          </div>
+
+           {/* Hire Date */}
+           <div className="flex flex-col">
+            <label htmlFor="hireDate" className="text-gray-700 font-semibold flex items-center gap-2">
+              <FaCalendarAlt /> Hire Date
+            </label>
+            <input
+              type="date"
+              id="hireDate"
+              name="hireDate"
+              value={formData.hireDate}
+              onChange={handleChange}
+              className="border-b border-gray-300 py-2 px-4 w-1/2"
+            />
+            {errors.hireDate && <p className="text-red-500 text-sm">{errors.hireDate}</p>}
           </div>
 
           {/* Feedback Message */}
@@ -258,21 +280,22 @@ const AddEmployee = () => {
           )}
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row sm:justify-between gap-6 mt-8">
-            <button
-              type="submit"
-              className="px-6 py-3 text-lg text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-all"
-            >
-              Submit
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/employees')}
-              className="px-6 py-3 text-lg text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300 transition-all"
-            >
-              Cancel
-            </button>
-          </div>
+          <div className="flex flex-col sm:flex-row sm:justify-start gap-6 mt-8">
+          <button
+            type="submit"
+            className="px-6 py-3 text-lg text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-all"
+          >
+            Submit
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/employees')}
+            className="px-6 py-3 text-lg text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300 transition-all"
+          >
+            Cancel
+          </button>
+        </div>
+
         </form>
       </div>
     </div>

@@ -18,9 +18,9 @@ const Settings = ({ user, logout }) => {
         <div className="flex flex-col items-center">
           {/* User profile icon */}
           <FaUserCircle className="text-indigo-500 text-7xl mb-4" />
-          {/* Display username, defaulting to 'User' if not available */}
+          {/* Display email (either the user or admin email) */}
           <h1 className="text-2xl font-extrabold text-gray-900 mb-2 text-center">
-            {user?.username || 'User'}
+            {user?.email || 'User Email'}
           </h1>
           {/* Display role of the user, defaulting to 'Guest Access' if no role is provided */}
           <p className="text-sm text-gray-600 mb-6 text-center italic">
@@ -28,12 +28,12 @@ const Settings = ({ user, logout }) => {
           </p>
         </div>
         {/* Logout button that triggers the handleLogout function */}
-        <button
+        {<button
           onClick={handleLogout}
           className="w-full px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-4 focus:ring-red-300 transition-colors"
         >
           Logout
-        </button>
+        </button>}
       </div>
     </div>
   );

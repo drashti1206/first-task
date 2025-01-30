@@ -17,6 +17,7 @@ let employees = [
     position: 'Software Engineer',
     department: 'Engineering',
     email: 'bhpatlkh@gmail.com',
+    hireDate:'Sep 20,2024',
     phone: '7836914852',
   },
   {
@@ -25,6 +26,7 @@ let employees = [
     position: 'Product Manager',
     department: 'Product',
     email: 'ladhetal@gmail.com',
+    hireDate:'Apr 23,2021',
     phone: '9863472185',
   },
   {
@@ -33,6 +35,7 @@ let employees = [
     position: 'HR Recruiter',
     department: 'HR',
     email: 'hardikpatel@gmail.com',
+    hireDate:'Dec 09,2024',
     phone: '9645892136',
   },
 ];
@@ -61,13 +64,13 @@ app.get('/employees', (req, res) => {
 
 // POST /employees - Add a new employee
 app.post('/employees', (req, res) => {
-  const { name, position, department, email, phone } = req.body;
+  const { name, position, department, email, phone, hireDate} = req.body;
 
   // Validation to ensure all required fields are provided
-  if (!name || !position || !department || !email || !phone) {
+  if (!name || !position || !department || !email || !phone || !hireDate) {
     return res.status(400).json({
       message:
-        'All fields (name, position, department, email, phone) are required',
+        'All fields (name, position, department, email, phone, hireDate) are required',
     });
   }
 
@@ -78,6 +81,7 @@ app.post('/employees', (req, res) => {
     department,
     email,
     phone,
+    hireDate,
   };
 
   employees.push(newEmployee);
@@ -87,13 +91,13 @@ app.post('/employees', (req, res) => {
 // PUT /employees/:id - Update an employee by ID
 app.put('/employees/:id', (req, res) => {
   const { id } = req.params;
-  const { name, position, department, email, phone } = req.body;
+  const { name, position, department, email, phone, hireDate } = req.body;
 
   // Validation to ensure required fields are provided
-  if (!name || !position || !department || !email || !phone) {
+  if (!name || !position || !department || !email || !phone || !hireDate) {
     return res.status(400).json({
       message:
-        'All fields (name, position, department, email, phone) are required',
+        'All fields (name, position, department, email, phone, hireDate) are required',
     });
   }
 
@@ -107,6 +111,7 @@ app.put('/employees/:id', (req, res) => {
       department,
       email,
       phone,
+      hireDate,
     };
     res.json(employees[employeeIndex]);
   } else {
