@@ -68,7 +68,7 @@ const Departments = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className=" flex-h-screen flex-1 bg-gray-100 h-full p-4 md:p-6 transition-opacity duration-300 opacity-100">
       <h1 className="text-3xl font-semibold text-gray-900 mb-6">Departments</h1>
 
       {/* Department List */}

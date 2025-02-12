@@ -18,7 +18,7 @@ const EditEmployee = () => {
     department: '',
     email: '',
     phone: '',
-    hireDate:'',
+    hireDate: '',
   }); // State to store form data
   const [errors, setErrors] = useState({});
   const [feedback, setFeedback] = useState('');
@@ -31,7 +31,7 @@ const EditEmployee = () => {
           `http://localhost:5000/employees/${id}`
         );
         const data = response.data;
-  
+
         // Ensure hireDate is formatted as YYYY-MM-DD
         if (data.hireDate) {
           const localDate = new Date(data.hireDate);
@@ -40,16 +40,15 @@ const EditEmployee = () => {
           const day = String(localDate.getDate()).padStart(2, '0');
           data.hireDate = `${year}-${month}-${day}`; // Format date as YYYY-MM-DD
         }
-  
+
         setFormData(data); // Set data to formData
       } catch (error) {
         setFeedback('Failed to fetch employee data.');
       }
     };
-  
+
     fetchEmployeeData(); // Call the function
   }, [id]);
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -58,7 +57,6 @@ const EditEmployee = () => {
       [name]: value, // Update state with form field value
     });
   };
-
   const validateForm = () => {
     const newErrors = {};
     let isValid = true;
@@ -128,7 +126,10 @@ const EditEmployee = () => {
     <div className="flex justify-center items-center w-full min-h-screen bg-gray-100 p-4 sm:p-6">
       <div className="w-full max-w-4xl p-4 bg-white rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold mb-4 text-gray-800">Edit Employee</h1>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full flex-grow">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-6 w-full flex-grow"
+        >
           {/* Name */}
           <div className="flex flex-col">
             <label
@@ -259,7 +260,7 @@ const EditEmployee = () => {
               <p className="text-red-500 text-sm">{errors.hireDate}</p>
             )}
           </div>
-        
+
           {feedback && (
             <p
               className={`text-lg font-semibold ${

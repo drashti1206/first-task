@@ -5,6 +5,7 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
+
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 import Layout from './components/Layout';
@@ -18,7 +19,7 @@ import AddEmployee from './pages/AddEmployee';
 import EditEmployee from './pages/EditEmployee';
 import EmployeeProvider from './context/EmployeeContext';
 import Login from './components/Login';
-import ProtectedRoute from './components/ProtectedRoute'; // For role-based protection
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
 const App = () => {
@@ -63,16 +64,13 @@ const App = () => {
       <Router>
         <Routes>
           {/* Login Route */}
-          {!isAuthenticated && (
-            <>
-              <Route path="/" element={<Navigate to="/login" />} />
-              <Route path="/login" element={<Login onLogin={handleLogin} />} />
-            </>
-          )}
+          {/* ✅ Ensure Login Page is Always Accessible */}
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
 
           {/* Protected Routes */}
           {isAuthenticated ? (
             <Route path="/" element={<Layout onLogout={handleLogout} />}>
+              <Route index element={<Navigate to="/dashboard" />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/departments" element={<Departments />} />
               <Route path="/add-department" element={<AddDepartment />} />
@@ -105,8 +103,15 @@ const App = () => {
             </Route>
           ) : (
             // Redirect to login if not authenticated
-            <Route path="*" element={<Navigate to="/login" />} />
+            <Route path="/" element={<Navigate to="/login" />} />
           )}
+          {/* ✅ Catch-All Route to Redirect Unknown Paths */}
+          <Route
+            path="*"
+            element={
+              <Navigate to={isAuthenticated ? '/dashboard' : '/login'} />
+            }
+          />
         </Routes>
       </Router>
     </EmployeeProvider>

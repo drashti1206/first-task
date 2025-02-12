@@ -17,7 +17,7 @@ const AddEmployee = () => {
     department: '',
     email: '',
     phone: '',
-    hireDate:'',
+    hireDate: '',
   });
 
   // State to manage validation errors
@@ -133,7 +133,7 @@ const AddEmployee = () => {
 
   return (
     <div className="flex h-screen ">
-      <div className="lex-1 flex-col item-center justify-start w-full min-h-screen sm:p-6 bg-gray-100 p-6 rounded-lg shadow-md m-4">
+      <div className="flex-1 bg-gray-100 overflow-y-auto p-4 md:p-6 transition-opacity duration-300 opacity-100">
         <h1 className="text-3xl font-bold mb-4 text-gray-800">Add Employee</h1>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full">
@@ -254,9 +254,12 @@ const AddEmployee = () => {
             )}
           </div>
 
-           {/* Hire Date */}
-           <div className="flex flex-col">
-            <label htmlFor="hireDate" className="text-gray-700 font-semibold flex items-center gap-2">
+          {/* Hire Date */}
+          <div className="flex flex-col">
+            <label
+              htmlFor="hireDate"
+              className="text-gray-700 font-semibold flex items-center gap-2"
+            >
               <FaCalendarAlt /> Hire Date
             </label>
             <input
@@ -267,7 +270,9 @@ const AddEmployee = () => {
               onChange={handleChange}
               className="border-b border-gray-300 py-2 px-4 w-1/2"
             />
-            {errors.hireDate && <p className="text-red-500 text-sm">{errors.hireDate}</p>}
+            {errors.hireDate && (
+              <p className="text-red-500 text-sm">{errors.hireDate}</p>
+            )}
           </div>
 
           {/* Feedback Message */}
@@ -281,21 +286,20 @@ const AddEmployee = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row sm:justify-start gap-6 mt-8">
-          <button
-            type="submit"
-            className="px-6 py-3 text-lg text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-all"
-          >
-            Submit
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/employees')}
-            className="px-6 py-3 text-lg text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300 transition-all"
-          >
-            Cancel
-          </button>
-        </div>
-
+            <button
+              type="submit"
+              className="px-6 py-3 text-lg text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-all"
+            >
+              Submit
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/employees')}
+              className="px-6 py-3 text-lg text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300 transition-all"
+            >
+              Cancel
+            </button>
+          </div>
         </form>
       </div>
     </div>

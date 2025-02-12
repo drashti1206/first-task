@@ -5,21 +5,27 @@ import ReactDOM from 'react-dom';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
+  // State variables for managing dropdowns, user details, and logout confirmation
   const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
   const [shownToasts, setShownToasts] = useState({});
   const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
   const [username, setUsername] = useState(''); // State to store the username
-  const [ userRole,setUserRole] = useState(''); // State to store the user role (admin/user)
+  const [userRole, setUserRole] = useState(''); // State to store the user role (admin/user)
+
+  // Ref for detecting clicks outside the employee dropdown
   const employeeDropdownRef = useRef(null);
   const navigate = useNavigate();
 
+  // Retrieve user role from localStorage
   const role = localStorage.getItem('user');
   const currentRole = role ? JSON.parse(role)?.role : null; // Fetching the role from localStorage
 
+  // Toggle Employee dropdown visibility
   const toggleEmployeeDropdown = () => {
     setIsEmployeeDropdownOpen(!isEmployeeDropdownOpen);
   };
 
+  // Handles clicks outside the employee dropdown to close it
   const handleClickOutside = (e) => {
     if (
       employeeDropdownRef.current &&
@@ -82,11 +88,13 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
   };
 
   const handleLogout = () => {
+    console.log('Logging out...');
     setShowLogoutConfirmation(false);
     handleToast('You have been logged out', 'logout');
     localStorage.removeItem('user'); // Clear user data
     logout(); // Call the logout function
     navigate('/login'); // Redirect to login page
+    console.log('Navigated to login page.');
   };
 
   const cancelLogout = () => {
@@ -107,7 +115,9 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
             alt="Logo"
             className="w-16 h-16 mb-2 rounded-full"
           />
-          <h1 className="text-lg text-center font-semibold">Employee Management</h1>
+          <h1 className="text-lg text-center font-semibold">
+            Employee Management
+          </h1>
         </div>
 
         {/* Navigation Section */}
@@ -212,8 +222,6 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
             <i className="fas fa-ellipsis-h"></i>
           </button>
         </div>
-
-
       </aside>
 
       {/* Logout Confirmation Modal using Portal */}
@@ -221,7 +229,9 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
         ReactDOM.createPortal(
           <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white text-black p-6 rounded-md shadow-lg">
-              <p className="mb-4 text-center">Are you sure you want to logout?</p>
+              <p className="mb-4 text-center">
+                Are you sure you want to logout?
+              </p>
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={handleLogout}

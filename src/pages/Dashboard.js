@@ -7,7 +7,6 @@ const Dashboard = () => {
       <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-gray-800">
         Dashboard
       </h1>
-
       {/* Stats Cards - Displays summary data */}
       <div className="stats-cards grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Number of Employees Card */}
@@ -15,6 +14,7 @@ const Dashboard = () => {
           <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">
             Number of Employees
           </h2>
+          
           <p className="text-2xl sm:text-3xl font-bold text-indigo-500">50</p>
           <img
             src="https://img.icons8.com/ios/452/teamwork.png"
@@ -97,7 +97,6 @@ const Dashboard = () => {
             View
           </button>
         </div>
-
         {/* Manage Projects Action */}
         <div className="action-card bg-white shadow-md rounded-lg p-6 text-center hover:shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
           <h3 className="text-lg font-semibold text-gray-800 mb-2">

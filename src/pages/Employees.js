@@ -12,14 +12,20 @@ const Employees = () => {
   const [sortOption, setSortOption] = useState('name');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10;
 
   const role = localStorage.getItem('user');
   const userRole = role ? JSON.parse(role)?.role : null;
-
-  const fetchEmployees = async () => {
+  const fetchEmployees = async (page = 1) => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/employees');
+      const response = await axios.get(`http://localhost:5000/employees`);
+      const totalCount = response.data.length;
+      console.log(totalCount);
+      setTotalPages(Math.ceil(totalCount / pageSize));
+      setEmployees(response.data);
       const sanitizedEmployees = response.data.map((employee, index) => ({
         ...employee,
         uniqueKey: `${employee.id || index}-${index}`,
@@ -33,18 +39,27 @@ const Employees = () => {
   };
 
   useEffect(() => {
-    fetchEmployees();
-  }, []);
+    fetchEmployees(currentPage); // Fetch employees whenever the currentPage changes
+  }, [currentPage]);
 
   const deleteEmployee = async (id) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this employee?');
+    const confirmDelete = window.confirm(
+      'Are you sure you want to delete this employee?'
+    );
     if (confirmDelete) {
       try {
         await axios.delete(`http://localhost:5000/employees/${id}`);
-        fetchEmployees();
+        fetchEmployees(currentPage); // Refetch employees for the current page
       } catch (error) {
         setError('Failed to delete employee.');
       }
+    }
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      fetchEmployees(newPage); // Fetch data for the new page
     }
   };
 
@@ -71,7 +86,8 @@ const Employees = () => {
           (!filterDepartment || employee.department === filterDepartment) &&
           (!filterPosition || employee.position === filterPosition) &&
           (!filterHireDate || employee.hireDate === filterHireDate) &&
-          (fuzzyMatch(searchLower, employee.name) || fuzzyMatch(searchLower, employee.email))
+          (fuzzyMatch(searchLower, employee.name) ||
+            fuzzyMatch(searchLower, employee.email))
         );
       })
       .sort((a, b) => {
@@ -82,11 +98,24 @@ const Employees = () => {
         }
         return 0;
       });
-  }, [employees, searchTerm, filterDepartment, filterPosition, filterHireDate, sortOption]);
+  }, [
+    employees,
+    searchTerm,
+    filterDepartment,
+    filterPosition,
+    filterHireDate,
+    sortOption,
+  ]);
+
+  const paginatedEmployees = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filteredEmployees.slice(startIndex, endIndex);
+  }, [filteredEmployees, currentPage]);
 
   return (
     <div className="flex h-screen">
-      <main className="flex-1 flex-col items-center justify-start w-full min-h-screen sm:p-6 bg-gray-100 p-6 rounded-lg shadow-md m-4">
+      <main className="flex-1 bg-gray-100 overflow-y-auto p-4 md:p-6 transition-opacity duration-300 opacity-100">
         <header className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-blue-800">Employees</h1>
           {userRole === 'admin' && (
@@ -118,8 +147,8 @@ const Employees = () => {
             <option value="Sales">Sales</option>
             <option value="Customer Care">Customer Care</option>
             <option value="Executive">Executive</option>
-
-
+            <option value="Finance">Finance</option>
+            <option value="Marketing">Marketing</option>
           </select>
           <select
             value={filterPosition}
@@ -132,6 +161,8 @@ const Employees = () => {
             <option value="Analyst">Analyst</option>
             <option value="Software Engineer">Software Engineer</option>
             <option value="Product Manager">Product Manager</option>
+            <option value="Technician">Technician</option>
+            <option value="Consultant">Consultant</option>
           </select>
           <input
             type="date"
@@ -148,38 +179,60 @@ const Employees = () => {
             <option value="department">Sort by Department</option>
           </select>
         </div>
-
         {loading && <div>Loading Employees...</div>}
         {error && <div className="text-red-500">{error}</div>}
         {!loading && !error && (
           <>
-            <div className="overflow-x-auto max-h-96 overflow-y-auto"> 
+            <div className="overflow-x-auto max-h-[80vh] overflow-y-auto">
               <table className="w-full table-auto border border-gray-300 rounded-lg shadow-sm sm:bg-gray-100">
                 <thead className="bg-blue-100 border-b border-gray-300 sticky top-0">
                   <tr>
                     <th className="px-4 py-2 text-left text-gray-800">Name</th>
-                    <th className="px-4 py-2 text-left text-gray-800">Position</th>
-                    <th className="px-4 py-2 text-left text-gray-800">Department</th>
+                    <th className="px-4 py-2 text-left text-gray-800">
+                      Position
+                    </th>
+                    <th className="px-4 py-2 text-left text-gray-800">
+                      Department
+                    </th>
                     <th className="px-4 py-2 text-left text-gray-800">Email</th>
                     <th className="px-4 py-2 text-left text-gray-800">Phone</th>
-                    <th className="px-4 py-2 text-left text-gray-800">Hire Date</th>
-                    {userRole === 'admin' && <th className="p-4 text-left text-blue-800">Actions</th>}
+                    <th className="px-4 py-2 text-left text-gray-800">
+                      Hire Date
+                    </th>
+                    {userRole === 'admin' && (
+                      <th className="p-4 text-left text-blue-800">Actions</th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredEmployees.length > 0 ? (
-                    filteredEmployees.map((employee) => (
+                  {paginatedEmployees.length > 0 ? (
+                    paginatedEmployees.map((employee) => (
                       <tr
                         key={employee.uniqueKey}
                         className="hover:bg-gray-200 even:bg-gray-50 odd:bg-white transition duration-300 ease-in-out"
                       >
-                        <td className="px-4 py-2 border-b border-gray-300">{employee.name}</td>
-                        <td className="px-4 py-2 border-b border-gray-300">{employee.position}</td>
-                        <td className="px-4 py-2 border-b border-gray-300">{employee.department}</td>
-                        <td className="px-4 py-2 border-b border-gray-300">{employee.email}</td>
-                        <td className="px-4 py-2 border-b border-gray-300">{employee.phone}</td>
                         <td className="px-4 py-2 border-b border-gray-300">
-                          {employee.hireDate ? format(new Date(employee.hireDate), 'MMM dd, yyyy') : 'n/a'}
+                          {employee.name}
+                        </td>
+                        <td className="px-4 py-2 border-b border-gray-300">
+                          {employee.position}
+                        </td>
+                        <td className="px-4 py-2 border-b border-gray-300">
+                          {employee.department}
+                        </td>
+                        <td className="px-4 py-2 border-b border-gray-300">
+                          {employee.email}
+                        </td>
+                        <td className="px-4 py-2 border-b border-gray-300">
+                          {employee.phone}
+                        </td>
+                        <td className="px-4 py-2 border-b border-gray-300">
+                          {employee.hireDate
+                            ? format(
+                                new Date(employee.hireDate),
+                                'MMM dd, yyyy'
+                              )
+                            : 'n/a'}
                         </td>
                         {userRole === 'admin' && (
                           <td className="px-4 py-2 border-b border-gray-300">
@@ -203,13 +256,40 @@ const Employees = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={userRole === 'admin' ? 7 : 6} className="text-center py-4 text-gray-500">
-                        No employees found. {userRole === 'admin' && <Link to="/add-employee" className="text-blue-600">Add First Employee</Link>}
+                      <td
+                        colSpan={userRole === 'admin' ? 7 : 6}
+                        className="text-center py-4 text-gray-500"
+                      >
+                        No employees found.{' '}
+                        {userRole === 'admin' && (
+                          <Link to="/add-employee" className="text-blue-600">
+                            Add Employee
+                          </Link>
+                        )}
                       </td>
                     </tr>
                   )}
                 </tbody>
               </table>
+            </div>
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <span className="px-4 py-2">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
+              >
+                Next
+              </button>
             </div>
           </>
         )}
